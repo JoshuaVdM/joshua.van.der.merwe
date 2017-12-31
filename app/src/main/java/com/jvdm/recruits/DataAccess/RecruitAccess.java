@@ -24,10 +24,13 @@ public class RecruitAccess{
                 }
             }
         }
-        Recruit r = new Recruit(displayname, currentUser.getEmail());
+        Recruit r = new Recruit();
+        r.setUsername(displayname);
+        r.setEmail(currentUser.getEmail());
         r.setVerified(true);
         r.setPermissions(new Permission());
         r.getPermissions().setMember(true);
+        r.setPhotoUri(currentUser.getPhotoUrl().toString());
         database.child("recruits").child(currentUser.getUid()).setValue(r);
     }
 

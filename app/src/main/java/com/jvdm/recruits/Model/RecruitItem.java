@@ -19,6 +19,12 @@ public class RecruitItem {
         this.pictureUri = pictureUri;
     }
 
+    public RecruitItem(String uid, Recruit r) {
+        this.uid = uid;
+        this.name = r.getUsername();
+        this.pictureUri = (r.getPhotoUri() != null) ? Uri.parse(r.getPhotoUri()) : null;
+    }
+
     public String getName() {
         return name;
     }

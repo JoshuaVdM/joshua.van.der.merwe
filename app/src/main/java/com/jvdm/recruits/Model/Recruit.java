@@ -17,23 +17,11 @@ public class Recruit implements FirebaseDatabaseModel {
     private String description;
     private Permission permissions;
     private Boolean verified;
+    private String photoUri;
 
     // Constructors
     public Recruit() {
     }
-
-    public Recruit(String username, String email) {
-        this.username = username;
-        this.email = email;
-    }
-
-    public Recruit(String username, String email, String description, Boolean verified) {
-        this.username = username;
-        this.email = email;
-        this.description = description;
-        this.verified = verified;
-    }
-
 
     // Getters and setters
     public String getUsername() {
@@ -76,6 +64,14 @@ public class Recruit implements FirebaseDatabaseModel {
         this.permissions = permissions;
     }
 
+    public String getPhotoUri() {
+        return photoUri;
+    }
+
+    public void setPhotoUri(String photoUri) {
+        this.photoUri = photoUri;
+    }
+
     // Methods
     @Exclude
     public Map<String, Object> toMap() {
@@ -85,6 +81,7 @@ public class Recruit implements FirebaseDatabaseModel {
         result.put("description", description);
         result.put("verified", verified);
         result.put("permissions", permissions);
+        result.put("photouri", photoUri);
 
         return result;
     }

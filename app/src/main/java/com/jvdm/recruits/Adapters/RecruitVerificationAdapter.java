@@ -32,19 +32,24 @@ public class RecruitVerificationAdapter extends ArrayAdapter {
         recruitList = list;
     }
 
+    @Override
+    public int getCount() {
+        return recruitList.size();
+    }
+
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         View listItem = convertView;
         if (listItem == null) {
-            listItem = LayoutInflater.from(context).inflate(R.layout.profile_list_item, parent, false);
+            listItem = LayoutInflater.from(context).inflate(R.layout.fragment_recruit_verification_list_item, parent, false);
         }
         RecruitItem currentRecruit = recruitList.get(position);
 
-        ImageView image = (ImageView) listItem.findViewById(R.id.img_recruit);
+        ImageView image = listItem.findViewById(R.id.img_recruit);
         Picasso.with(context).load(currentRecruit.getPictureUri()).transform(new CircleTransform()).into(image);
 
-        TextView name = (TextView) listItem.findViewById(R.id.txt_recruit_name);
+        TextView name = listItem.findViewById(R.id.txt_recruit_name);
         name.setText(currentRecruit.getName());
 
         return listItem;

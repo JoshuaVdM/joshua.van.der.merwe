@@ -27,7 +27,6 @@ public class ProfileFragment extends Fragment {
     private TextView recruitName;
     private TextView recruitEmail;
     private ImageView profilePicture;
-    private TextView admin;
 
     public ProfileFragment() {
     }
@@ -44,8 +43,7 @@ public class ProfileFragment extends Fragment {
         // Initialize views
         recruitName = rootView.findViewById(R.id.text_recruit_name);
         recruitEmail = rootView.findViewById(R.id.text_recruit_email);
-        profilePicture = (ImageView) rootView.findViewById(R.id.image_profile);
-        admin = (TextView) rootView.findViewById(R.id.txt_admin);
+        profilePicture = rootView.findViewById(R.id.image_profile);
 
         return rootView;
     }
@@ -72,7 +70,6 @@ public class ProfileFragment extends Fragment {
                 if (r != null) {
                     recruitName.setText(r.getUsername());
                     recruitEmail.setText(r.getEmail());
-                    admin.setText(String.valueOf(r.getPermissions().isAdmin()));
                     ref.removeEventListener(this);
                 }
             }

@@ -33,6 +33,7 @@ import com.jvdm.recruits.Activities.ProfileEditActivity;
 import com.jvdm.recruits.Activities.SettingsActivity;
 import com.jvdm.recruits.Fragments.GroupsFragment;
 import com.jvdm.recruits.Fragments.ProfileFragment;
+import com.jvdm.recruits.Fragments.RecruitVerificationFragment;
 import com.jvdm.recruits.Helpers.CircleTransform;
 import com.jvdm.recruits.Model.Recruit;
 import com.squareup.picasso.Picasso;
@@ -44,25 +45,30 @@ public class MainActivity extends AppCompatActivity
     public FirebaseUser currentUser;
     public DatabaseReference database;
     public NavigationView navigationView;
-    private ImageView profilePicture;
+
+    private TextView recruitName;
+    private TextView recruitEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
 
         // Initialise auth
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
+        if (currentUser == null) {
+            signOut();
+        }
 
+        // Initialise database
         database = FirebaseDatabase.getInstance().getReference();
 
+
         setContentView(R.layout.activity_main);
-
         Toolbar toolbar = findViewById(R.id.toolbar);
-
         setSupportActionBar(toolbar);
 
+        // Initialize floating action button
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,44 +78,29 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        // Initialize drawer toggle
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        // Initialize drawer navigation
         navigationView = findViewById(R.id.nav_view);
-
         navigationView.setNavigationItemSelectedListener(this);
-        profilePicture = navigationView.getHeaderView(0).findViewById(R.id.image_profile);
 
+        displaySelectedFragment(R.id.nav_groups);
+
+
+        // Set user profile picture
+        ImageView profilePicture = navigationView.getHeaderView(0).findViewById(R.id.image_profile);
         if (currentUser.getPhotoUrl() != null) {
             Picasso.with(this).load(currentUser.getPhotoUrl()).transform(new CircleTransform()).into(profilePicture);
         }
 
-        displaySelectedFragment(R.id.nav_groups);
-
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        if (currentUser == null) {
-            signOut();
-        }
-
-        navigationView.getMenu().clear();
-        if (Properties.getInstance().getCurrentRecruit().getPermissions().isAdmin()) {
-            navigationView.inflateMenu(R.menu.activity_main_drawer_admin);
-        }
-        else {
-            navigationView.inflateMenu(R.menu.activity_main_drawer);
-        }
-
-        final TextView recruitname = navigationView.getHeaderView(0).findViewById(R.id.text_recruit_name);
-        final TextView recruitemail = navigationView.getHeaderView(0).findViewById(R.id.text_recruit_email);
-
+        // Set recruit info fields listeners
+        recruitName = navigationView.getHeaderView(0).findViewById(R.id.text_recruit_name);
+        recruitEmail = navigationView.getHeaderView(0).findViewById(R.id.text_recruit_email);
         final DatabaseReference ref = database.child("recruits").child(currentUser.getUid());
         ref.addValueEventListener(new ValueEventListener() {
             @Override
@@ -117,8 +108,8 @@ public class MainActivity extends AppCompatActivity
                 if (dataSnapshot.getValue() != null) {
                     Recruit r = dataSnapshot.getValue(Recruit.class);
                     if (r != null) {
-                        recruitname.setText(r.getUsername());
-                        recruitemail.setText(currentUser.getUid());
+                        recruitName.setText(r.getUsername());
+                        recruitEmail.setText(currentUser.getUid());
                         ref.removeEventListener(this);
                     }
                 }
@@ -129,6 +120,18 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        navigationView.getMenu().clear();
+        if (Properties.getInstance().getCurrentRecruit().getPermissions().isAdmin()) {
+            navigationView.inflateMenu(R.menu.activity_main_drawer_admin);
+        } else {
+            navigationView.inflateMenu(R.menu.activity_main_drawer);
+        }
     }
 
     @Override
@@ -190,6 +193,9 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_sign_out:
                 onSignOut();
                 break;
+            case R.id.nav_verifications:
+                fragment = new RecruitVerificationFragment();
+                break;
         }
         if (fragment != null) {
             FragmentManager manager = getSupportFragmentManager();
@@ -212,6 +218,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void signOut() {
+        finish();
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(intent);
     }

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
@@ -34,6 +35,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
     private DatabaseReference database;
+    private DatabaseReference userRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,11 +80,20 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onVerified(Recruit r) {
+
         Properties properties = Properties.getInstance();
         properties.setCurrentRecruit(r);
         properties.addRecruitListener(database.child("recruits").child(currentUser.getUid()));
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+    }
+
+    public Recruit fixRecruit(Recruit r) {
+        if (TextUtils.isEmpty(r.getPhotoUri()) && currentUser.getPhotoUrl() != null) {
+            r.setPhotoUri(currentUser.getPhotoUrl().toString());
+        }
+        database.child("recruits").child(currentUser.getUid()).setValue(r);
+        return r;
     }
 
     public void onNotVerified() {
@@ -117,6 +128,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Recruit r = dataSnapshot.getValue(Recruit.class);
                 if (r != null) {
+                    r = fixRecruit(r);
                     if (r.getVerified() != null) {
                         if (r.getVerified()) {
                             onVerified(r);
@@ -136,8 +148,17 @@ public class LoginActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
             }
         };
+        updateUserRef();
         DatabaseReference user = database.child("recruits").child(currentUser.getUid());
         user.addListenerForSingleValueEvent(recruitListener);
+    }
+
+    public void updateUserRef() {
+        if (userRef != null) {
+            userRef.keepSynced(false);
+        }
+        userRef = database.child("recruits").child(currentUser.getUid());
+        userRef.keepSynced(true);
     }
 
     @Override
