@@ -18,6 +18,7 @@ public class MyApplication extends Application {
         // Set local persistence
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         boolean persistData = preferences.getBoolean(getString(R.string.pref_data_persistence_key), true);
-        FirebaseDatabase.getInstance().setPersistenceEnabled(persistData);
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        database.setPersistenceEnabled(persistData);
     }
 }

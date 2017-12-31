@@ -1,4 +1,4 @@
-package com.jvdm.recruits;
+package com.jvdm.recruits.Activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +17,10 @@ import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
 import android.view.MenuItem;
+
+import com.jvdm.recruits.Helpers.Helper;
+import com.jvdm.recruits.Properties;
+import com.jvdm.recruits.R;
 
 // https://www.androidhive.info/2017/07/android-implementing-preferences-settings-screen/
 
@@ -112,6 +116,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // load settings fragment

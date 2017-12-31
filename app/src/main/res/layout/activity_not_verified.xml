@@ -3,12 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.jvdm.recruits.Activities.SettingsActivity"
-    tools:showIn="@layout/app_bar_main">
-
-    <include
-        layout="@layout/app_bar_main"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+    tools:context="com.jvdm.recruits.Activities.NotVerifiedActivity">
 
 </android.support.constraint.ConstraintLayout>

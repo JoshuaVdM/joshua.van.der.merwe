@@ -9,7 +9,7 @@ import java.util.Map;
  * Created by Joske on 23/12/17.
  */
 
-public class Group {
+public class Group implements FirebaseDatabaseModel {
     private String name;
     private HashMap<String, Role> recruits;
 
@@ -48,6 +48,7 @@ public class Group {
     }
 
     @Exclude
+    @Override
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("name", name);

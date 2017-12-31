@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -25,6 +27,7 @@ public class ProfileFragment extends Fragment {
     private TextView recruitName;
     private TextView recruitEmail;
     private ImageView profilePicture;
+    private TextView admin;
 
     public ProfileFragment() {
     }
@@ -36,12 +39,22 @@ public class ProfileFragment extends Fragment {
         mainActivity = (MainActivity) getActivity();
         mainActivity.setTitle(getResources().getString(R.string.profile_title));
 
+        setHasOptionsMenu(true);
+
         // Initialize views
         recruitName = rootView.findViewById(R.id.text_recruit_name);
         recruitEmail = rootView.findViewById(R.id.text_recruit_email);
         profilePicture = (ImageView) rootView.findViewById(R.id.image_profile);
+        admin = (TextView) rootView.findViewById(R.id.txt_admin);
 
         return rootView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.profile, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -59,6 +72,7 @@ public class ProfileFragment extends Fragment {
                 if (r != null) {
                     recruitName.setText(r.getUsername());
                     recruitEmail.setText(r.getEmail());
+                    admin.setText(String.valueOf(r.getPermissions().isAdmin()));
                     ref.removeEventListener(this);
                 }
             }

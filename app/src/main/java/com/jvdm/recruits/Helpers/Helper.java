@@ -1,4 +1,4 @@
-package com.jvdm.recruits;
+package com.jvdm.recruits.Helpers;
 
 import android.content.Context;
 import android.widget.Toast;

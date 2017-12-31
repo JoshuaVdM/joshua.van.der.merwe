@@ -1,17 +1,26 @@
 package com.jvdm.recruits;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.ResultCodes;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.jvdm.recruits.DataAccess.RecruitAccess;
+import com.jvdm.recruits.Model.Recruit;
 
 import java.util.Arrays;
 import java.util.List;
@@ -48,13 +57,11 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
-        currentUser = mAuth.getCurrentUser();
-
-        checkLogin(currentUser);
+        checkLogin();
     }
 
-    private void checkLogin(FirebaseUser currentUser) {
+    private void checkLogin() {
+        refreshAuth();
         if (currentUser == null) {
             startActivityForResult(
                     AuthUI.getInstance()
@@ -62,16 +69,77 @@ public class LoginActivity extends AppCompatActivity {
                             .setAvailableProviders(providers)
                             .build(),
                     RC_SIGN_IN);
-        }
-        else {
+        } else {
             onLoggedIn();
         }
     }
 
-    public void onLoggedIn() {
-        RecruitAccess.addRecruitIfNotExists();
+    public void refreshAuth() {
+        currentUser = mAuth.getCurrentUser();
+    }
+
+    public void onVerified(Recruit r) {
+        Properties properties = Properties.getInstance();
+        properties.setCurrentRecruit(r);
+        properties.addRecruitListener(database.child("recruits").child(currentUser.getUid()));
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+        Recruit currentRecruit = r;
+    }
+
+    public void onNotVerified() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(getString(R.string.msg_not_verified))
+                .setTitle(getString(R.string.title_not_verified));
+
+        builder.setPositiveButton(getString(R.string.action_choose_account), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                onSignOut();
+            }
+        });
+
+        builder.setNegativeButton(getString(R.string.action_exit_app), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+                AuthUI.getInstance()
+                        .signOut(getApplicationContext());
+                finish();
+                moveTaskToBack(true);
+            }
+        });
+
+        builder.create().show();
+    }
+
+    public void onLoggedIn() {
+        ValueEventListener recruitListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Recruit r = dataSnapshot.getValue(Recruit.class);
+                if (r != null) {
+                    if (r.getVerified() != null) {
+                        if (r.getVerified()) {
+                            onVerified(r);
+                        }
+                        else {
+                            onNotVerified();
+                        }
+                    }
+                }
+                else {
+                    RecruitAccess.add(currentUser, database);
+                    onLoggedIn();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        };
+        DatabaseReference user = database.child("recruits").child(currentUser.getUid());
+        user.addListenerForSingleValueEvent(recruitListener);
     }
 
     @Override
@@ -82,7 +150,7 @@ public class LoginActivity extends AppCompatActivity {
 
             if (resultCode == ResultCodes.OK) {
                 // Successfully signed in
-                currentUser = mAuth.getCurrentUser();
+                refreshAuth();
                 onLoggedIn();
                 // ...
             } else {
@@ -90,5 +158,15 @@ public class LoginActivity extends AppCompatActivity {
                 // ...
             }
         }
+    }
+
+    public void onSignOut() {
+        AuthUI.getInstance()
+                .signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    public void onComplete(@NonNull Task<Void> task) {
+                        checkLogin();
+                    }
+                });
     }
 }

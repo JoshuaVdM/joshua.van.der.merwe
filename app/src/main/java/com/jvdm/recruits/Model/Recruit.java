@@ -4,7 +4,6 @@ import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,11 +11,12 @@ import java.util.Map;
  */
 
 @IgnoreExtraProperties
-public class Recruit {
+public class Recruit implements FirebaseDatabaseModel {
     private String username;
     private String email;
-
-    private List<String> hobbies;
+    private String description;
+    private Permission permissions;
+    private Boolean verified;
 
     // Constructors
     public Recruit() {
@@ -25,6 +25,13 @@ public class Recruit {
     public Recruit(String username, String email) {
         this.username = username;
         this.email = email;
+    }
+
+    public Recruit(String username, String email, String description, Boolean verified) {
+        this.username = username;
+        this.email = email;
+        this.description = description;
+        this.verified = verified;
     }
 
 
@@ -45,12 +52,28 @@ public class Recruit {
         this.email = email;
     }
 
-    public List<String> getHobbies() {
-        return hobbies;
+    public String getDescription() {
+        return description;
     }
 
-    public void setHobbies(List<String> hobbies) {
-        this.hobbies = hobbies;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Boolean getVerified() {
+        return verified;
+    }
+
+    public void setVerified(Boolean verified) {
+        this.verified = verified;
+    }
+
+    public Permission getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(Permission permissions) {
+        this.permissions = permissions;
     }
 
     // Methods
@@ -59,7 +82,9 @@ public class Recruit {
         HashMap<String, Object> result = new HashMap<>();
         result.put("username", username);
         result.put("email", email);
-        result.put("hobbies", hobbies);
+        result.put("description", description);
+        result.put("verified", verified);
+        result.put("permissions", permissions);
 
         return result;
     }

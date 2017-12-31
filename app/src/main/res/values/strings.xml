@@ -13,13 +13,23 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."</string>
     <string name="action_sign_out">Sign out</string>
+    <string name="msg_not_verified">Your account has not been verified yet.</string>
+    <string name="title_not_verified">Not verified</string>
+    <string name="action_exit_app">Exit app</string>
+    <string name="action_choose_account">Change account</string>
 
     <!-- Strings related to profile -->
-
     <string name="profile_manage">Manage</string>
     <string name="profile_title">Profile</string>
     <string name="profile_groups">My groups</string>
     <string name="profile_image">Profile picture</string>
+    <string name="profile_edit">Edit profile</string>
+    <string name="profile_description">About me</string>
+    <string name="profile_description_edit">Tell us about yourself</string>
+    <string name="profile_action_save">Save</string>
+    <string name="profile_accept_verification">Accept</string>
+    <string name="profile_decline_verification">Decline</string>
+
 
     <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
     <string name="facebook_application_id" translatable="false">1627493943938849</string>

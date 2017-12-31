@@ -29,6 +29,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.jvdm.recruits.Activities.ProfileEditActivity;
+import com.jvdm.recruits.Activities.SettingsActivity;
 import com.jvdm.recruits.Fragments.GroupsFragment;
 import com.jvdm.recruits.Fragments.ProfileFragment;
 import com.jvdm.recruits.Helpers.CircleTransform;
@@ -77,11 +79,12 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         navigationView = findViewById(R.id.nav_view);
+
         navigationView.setNavigationItemSelectedListener(this);
         profilePicture = (ImageView) navigationView.getHeaderView(0).findViewById(R.id.image_profile);
 
         if (currentUser.getPhotoUrl() != null) {
-            Picasso.with(this).load(currentUser.getPhotoUrl()).resize(150,150).transform(new CircleTransform()).into(profilePicture);
+            Picasso.with(this).load(currentUser.getPhotoUrl()).transform(new CircleTransform()).into(profilePicture);
         }
 
         displaySelectedFragment(R.id.nav_groups);
@@ -91,9 +94,19 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
+
         if (currentUser == null) {
             signOut();
         }
+
+        navigationView.getMenu().clear();
+        if (Properties.getInstance().getCurrentRecruit().getPermissions().isAdmin()) {
+            navigationView.inflateMenu(R.menu.activity_main_drawer_admin);
+        }
+        else {
+            navigationView.inflateMenu(R.menu.activity_main_drawer);
+        }
+
         final TextView recruitname = navigationView.getHeaderView(0).findViewById(R.id.text_recruit_name);
         final TextView recruitemail = navigationView.getHeaderView(0).findViewById(R.id.text_recruit_email);
 
@@ -124,7 +137,8 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            finish();
+            moveTaskToBack(true);
         }
     }
 
@@ -142,14 +156,17 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
-            return true;
+        switch (id) {
+            case R.id.action_settings:
+                Intent settingsIntent = new Intent(this, SettingsActivity.class);
+                startActivity(settingsIntent);
+                break;
+            case R.id.action_edit:
+                Intent editIntent = new Intent(this, ProfileEditActivity.class);
+                startActivity(editIntent);
+                break;
         }
-
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

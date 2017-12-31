@@ -1,4 +1,4 @@
-package com.jvdm.recruits;
+package com.jvdm.recruits.Activities;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
