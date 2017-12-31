@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
-import com.firebase.ui.auth.ResultCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -84,7 +83,6 @@ public class LoginActivity extends AppCompatActivity {
         properties.addRecruitListener(database.child("recruits").child(currentUser.getUid()));
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
-        Recruit currentRecruit = r;
     }
 
     public void onNotVerified() {
@@ -148,13 +146,10 @@ public class LoginActivity extends AppCompatActivity {
         if (requestCode == RC_SIGN_IN) {
             IdpResponse response = IdpResponse.fromResultIntent(data);
 
-            if (resultCode == ResultCodes.OK) {
+            if (resultCode == RESULT_OK) {
                 // Successfully signed in
                 refreshAuth();
                 onLoggedIn();
-                // ...
-            } else {
-                // Sign in failed, check response for error code
                 // ...
             }
         }
