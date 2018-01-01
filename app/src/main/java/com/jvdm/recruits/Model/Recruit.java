@@ -1,6 +1,6 @@
 package com.jvdm.recruits.Model;
 
-import com.google.firebase.database.IgnoreExtraProperties;
+import com.google.firebase.firestore.IgnoreExtraProperties;
 
 /**
  * Created by Joske on 23/12/17.
