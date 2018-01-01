@@ -7,10 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.jvdm.recruits.DataAccess.RecruitAccess;
 import com.jvdm.recruits.Helpers.CircleTransform;
+import com.jvdm.recruits.Helpers.Helper;
 import com.jvdm.recruits.Model.RecruitItem;
 import com.jvdm.recruits.R;
 import com.squareup.picasso.Picasso;
@@ -22,36 +25,69 @@ import java.util.List;
  * Created by Joske on 31/12/17.
  */
 
-public class RecruitVerificationAdapter extends ArrayAdapter {
+public class RecruitVerificationAdapter extends ArrayAdapter<RecruitItem> {
     private Context context;
     private List<RecruitItem> recruitList = new ArrayList<>();
 
     public RecruitVerificationAdapter(@NonNull Context context, ArrayList<RecruitItem> list) {
-        super(context, 0, list);
+        super(context, R.layout.fragment_recruit_verification_list_item, list);
         this.context = context;
         recruitList = list;
-    }
-
-    @Override
-    public int getCount() {
-        return recruitList.size();
     }
 
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        View listItem = convertView;
-        if (listItem == null) {
-            listItem = LayoutInflater.from(context).inflate(R.layout.fragment_recruit_verification_list_item, parent, false);
+        final RecruitItem recruitItem = getItem(position);
+
+        final ViewHolder viewHolder;
+
+        final View result;
+
+        if (convertView == null) {
+            viewHolder = new ViewHolder();
+            LayoutInflater inflater = LayoutInflater.from(context);
+            convertView = inflater.inflate(R.layout.fragment_recruit_verification_list_item, parent, false);
+
+            viewHolder.image = convertView.findViewById(R.id.img_recruit);
+            viewHolder.name = convertView.findViewById(R.id.txt_recruit_name);
+            viewHolder.accept = convertView.findViewById(R.id.btn_accept);
+            viewHolder.decline = convertView.findViewById(R.id.btn_decline);
+
+            result = convertView;
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
+            result = convertView;
         }
-        RecruitItem currentRecruit = recruitList.get(position);
+        viewHolder.accept.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String key = recruitItem.getUid();
+                RecruitAccess.updateRecruitVerified(key, true);
+                Helper.showShortToast(context, "Account request accepted");
+            }
+        });
 
-        ImageView image = listItem.findViewById(R.id.img_recruit);
-        Picasso.with(context).load(currentRecruit.getPictureUri()).transform(new CircleTransform()).into(image);
+        viewHolder.decline.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String key = recruitItem.getUid();
+                RecruitAccess.declineRecruitVerification(key);
+                Helper.showShortToast(context, "Account request denied");
+            }
+        });
 
-        TextView name = listItem.findViewById(R.id.txt_recruit_name);
-        name.setText(currentRecruit.getName());
+        viewHolder.name.setText(recruitItem.getName());
+        Picasso.with(context).load(recruitItem.getPictureUri()).transform(new CircleTransform()).into(viewHolder.image);
 
-        return listItem;
+        return convertView;
+    }
+
+    private static class ViewHolder {
+        ImageView image;
+        TextView name;
+        Button accept;
+        Button decline;
     }
 }

@@ -13,6 +13,9 @@ public class RecruitItem {
 
     private Uri pictureUri;
 
+    public RecruitItem() {
+    }
+
     public RecruitItem(String uid, String name, Uri pictureUri) {
         this.uid = uid;
         this.name = name;

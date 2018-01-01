@@ -1,6 +1,8 @@
 package com.jvdm.recruits;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -24,13 +26,14 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.jvdm.recruits.Activities.ProfileEditActivity;
 import com.jvdm.recruits.Activities.SettingsActivity;
+import com.jvdm.recruits.DataAccess.RecruitAccess;
 import com.jvdm.recruits.Fragments.GroupsFragment;
 import com.jvdm.recruits.Fragments.ProfileFragment;
 import com.jvdm.recruits.Fragments.RecruitVerificationFragment;
@@ -43,15 +46,21 @@ public class MainActivity extends AppCompatActivity
 
     public FirebaseAuth auth;
     public FirebaseUser currentUser;
-    public DatabaseReference database;
+    public FirebaseFirestore firestore;
     public NavigationView navigationView;
 
+    private Context context;
     private TextView recruitName;
     private TextView recruitEmail;
+    private ImageView profilePicture;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        context = this;
+
+        Recruit r = Properties.getInstance().getCurrentRecruit();
 
         // Initialise auth
         auth = FirebaseAuth.getInstance();
@@ -61,7 +70,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         // Initialise database
-        database = FirebaseDatabase.getInstance().getReference();
+        firestore = FirebaseFirestore.getInstance();
 
 
         setContentView(R.layout.activity_main);
@@ -91,47 +100,33 @@ public class MainActivity extends AppCompatActivity
 
         displaySelectedFragment(R.id.nav_groups);
 
-
-        // Set user profile picture
-        ImageView profilePicture = navigationView.getHeaderView(0).findViewById(R.id.image_profile);
-        if (currentUser.getPhotoUrl() != null) {
-            Picasso.with(this).load(currentUser.getPhotoUrl()).transform(new CircleTransform()).into(profilePicture);
-        }
-
         // Set recruit info fields listeners
         recruitName = navigationView.getHeaderView(0).findViewById(R.id.text_recruit_name);
         recruitEmail = navigationView.getHeaderView(0).findViewById(R.id.text_recruit_email);
-        final DatabaseReference ref = database.child("recruits").child(currentUser.getUid());
-        ref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue() != null) {
-                    Recruit r = dataSnapshot.getValue(Recruit.class);
-                    if (r != null) {
-                        recruitName.setText(r.getUsername());
-                        recruitEmail.setText(currentUser.getUid());
-                        ref.removeEventListener(this);
-                    }
-                }
-            }
+        profilePicture = navigationView.getHeaderView(0).findViewById(R.id.image_profile);
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
         navigationView.getMenu().clear();
         if (Properties.getInstance().getCurrentRecruit().getPermissions().isAdmin()) {
             navigationView.inflateMenu(R.menu.activity_main_drawer_admin);
         } else {
             navigationView.inflateMenu(R.menu.activity_main_drawer);
         }
+
+        DocumentReference userDocRef = RecruitAccess.getRecruitDocumentReference(currentUser.getUid());
+        userDocRef.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (documentSnapshot.exists()) {
+                    Recruit r = documentSnapshot.toObject(Recruit.class);
+                    recruitName.setText(r.getUsername());
+                    recruitEmail.setText(currentUser.getUid());
+                    if (r.getPhotoUri() != null) {
+                        Picasso.with(context).load(Uri.parse(r.getPhotoUri())).transform(new CircleTransform()).into(profilePicture);
+                    }
+                }
+            }
+        });
     }
 
     @Override

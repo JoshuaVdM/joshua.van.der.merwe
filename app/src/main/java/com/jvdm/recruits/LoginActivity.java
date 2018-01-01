@@ -6,20 +6,19 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.jvdm.recruits.DataAccess.GroupAccess;
 import com.jvdm.recruits.DataAccess.RecruitAccess;
+import com.jvdm.recruits.Model.Group;
 import com.jvdm.recruits.Model.Recruit;
 
 import java.util.Arrays;
@@ -32,17 +31,15 @@ public class LoginActivity extends AppCompatActivity {
     // Login providers
     private List<AuthUI.IdpConfig> providers;
 
-    private FirebaseAuth mAuth;
+    private FirebaseAuth auth;
     private FirebaseUser currentUser;
-    private DatabaseReference database;
-    private DatabaseReference userRef;
+    private DocumentReference userDocRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAuth = FirebaseAuth.getInstance();
-        database = FirebaseDatabase.getInstance().getReference();
+        auth = FirebaseAuth.getInstance();
 
 
         setContentView(R.layout.activity_login);
@@ -76,24 +73,25 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void refreshAuth() {
-        currentUser = mAuth.getCurrentUser();
+        currentUser = auth.getCurrentUser();
     }
 
-    public void onVerified(Recruit r) {
-
+    public void onVerified(String key, Recruit r) {
         Properties properties = Properties.getInstance();
         properties.setCurrentRecruit(r);
-        properties.addRecruitListener(database.child("recruits").child(currentUser.getUid()));
+        properties.listenForRecruit(RecruitAccess.getRecruitDocumentReference(key));
+
+        updateGroup();
+
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 
-    public Recruit fixRecruit(Recruit r) {
-        if (TextUtils.isEmpty(r.getPhotoUri()) && currentUser.getPhotoUrl() != null) {
-            r.setPhotoUri(currentUser.getPhotoUrl().toString());
-        }
-        database.child("recruits").child(currentUser.getUid()).setValue(r);
-        return r;
+    public void updateGroup() {
+        Group g = new Group();
+        g.setCity("Brussel");
+
+        GroupAccess.add("Recruits Brussel", g);
     }
 
     public void onNotVerified() {
@@ -123,43 +121,35 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onLoggedIn() {
-        ValueEventListener recruitListener = new ValueEventListener() {
+        userDocRef = RecruitAccess.getRecruitDocumentReference(currentUser.getUid());
+        userDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Recruit r = dataSnapshot.getValue(Recruit.class);
-                if (r != null) {
-                    r = fixRecruit(r);
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()) {
+                    Recruit r = documentSnapshot.toObject(Recruit.class);
                     if (r.getVerified() != null) {
                         if (r.getVerified()) {
-                            onVerified(r);
-                        }
-                        else {
+                            onVerified(documentSnapshot.getId(), r);
+                        } else {
                             onNotVerified();
                         }
                     }
-                }
-                else {
-                    RecruitAccess.add(currentUser, database);
+                } else {
+                    RecruitAccess.add(currentUser);
                     onLoggedIn();
                 }
             }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        };
-        updateUserRef();
-        DatabaseReference user = database.child("recruits").child(currentUser.getUid());
-        user.addListenerForSingleValueEvent(recruitListener);
+        });
     }
 
-    public void updateUserRef() {
+    // Enable firestore offline access and update
+   /* public void updateUserRef() {
         if (userRef != null) {
             userRef.keepSynced(false);
         }
         userRef = database.child("recruits").child(currentUser.getUid());
         userRef.keepSynced(true);
-    }
+    }*/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -177,6 +167,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void onSignOut() {
+        refreshAuth();
         AuthUI.getInstance()
                 .signOut(this)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {

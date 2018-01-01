@@ -4,7 +4,8 @@ import android.app.Application;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 /**
  * Created by Joske on 30/12/17.
@@ -18,7 +19,10 @@ public class MyApplication extends Application {
         // Set local persistence
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         boolean persistData = preferences.getBoolean(getString(R.string.pref_data_persistence_key), true);
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        database.setPersistenceEnabled(persistData);
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(persistData)
+                .build();
+        FirebaseFirestore database = FirebaseFirestore.getInstance();
+        database.setFirestoreSettings(settings);
     }
 }

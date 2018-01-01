@@ -1,9 +1,9 @@
 package com.jvdm.recruits;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.jvdm.recruits.Model.Recruit;
 
 /**
@@ -15,6 +15,7 @@ public class Properties {
 
     private boolean dataPersistenceChanged = false;
     private Recruit currentRecruit = null;
+    private DocumentReference currentRecruitRef = null;
 
     protected Properties() {
     }
@@ -41,20 +42,24 @@ public class Properties {
     public void setCurrentRecruit(Recruit currentRecruit) {
         this.currentRecruit = currentRecruit;
     }
-    public void addRecruitListener(DatabaseReference reference) {
-        ValueEventListener listener = new ValueEventListener() {
+
+    public DocumentReference getCurrentRecruitRef() {
+        return currentRecruitRef;
+    }
+
+    public void setCurrentRecruitRef(DocumentReference currentRecruitRef) {
+        this.currentRecruitRef = currentRecruitRef;
+    }
+
+    public void listenForRecruit(DocumentReference reference) {
+        currentRecruitRef = reference;
+        reference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Recruit recruit = dataSnapshot.getValue(Recruit.class);
-                if (recruit != null) {
-                    currentRecruit = recruit;
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (documentSnapshot.exists()) {
+                    currentRecruit = documentSnapshot.toObject(Recruit.class);
                 }
             }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
+        });
     }
 }

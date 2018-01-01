@@ -2,20 +2,22 @@ package com.jvdm.recruits.DataAccess;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
  * Created by Joske on 23/12/17.
  */
 
 public class DataAccess {
-    protected static FirebaseAuth auth;
-    protected static FirebaseUser currentUser;
-    protected static DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+    protected static FirebaseAuth getFirebaseAuth() {
+        return FirebaseAuth.getInstance();
+    }
 
-    protected static void updateAuth() {
-        auth = FirebaseAuth.getInstance();
-        currentUser = auth.getCurrentUser();
+    protected static FirebaseUser getCurrentUser() {
+        return getFirebaseAuth().getCurrentUser();
+    }
+
+    protected static FirebaseFirestore getDatabase() {
+        return FirebaseFirestore.getInstance();
     }
 }

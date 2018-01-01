@@ -9,11 +9,16 @@ import java.util.Map;
  * Created by Joske on 31/12/17.
  */
 
-public class Permission implements FirebaseDatabaseModel {
+public class Permission {
     private boolean admin;
     private boolean member;
 
     public Permission() {
+    }
+
+    public Permission(boolean admin, boolean member) {
+        this.admin = admin;
+        this.member = member;
     }
 
     public boolean isAdmin() {
@@ -33,7 +38,6 @@ public class Permission implements FirebaseDatabaseModel {
     }
 
     @Exclude
-    @Override
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();
         result.put("admin", admin);

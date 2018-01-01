@@ -1,5 +1,6 @@
 package com.jvdm.recruits.Fragments;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,10 +12,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.jvdm.recruits.DataAccess.RecruitAccess;
 import com.jvdm.recruits.Helpers.CircleTransform;
 import com.jvdm.recruits.MainActivity;
 import com.jvdm.recruits.Model.Recruit;
@@ -59,24 +61,18 @@ public class ProfileFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        // Load profile picture
-        Picasso.with(mainActivity).load(mainActivity.currentUser.getPhotoUrl()).transform(new CircleTransform()).into(profilePicture);
-
-        final DatabaseReference ref = mainActivity.database.child("recruits").child(mainActivity.currentUser.getUid());
-        ref.addValueEventListener(new ValueEventListener() {
+        DocumentReference userDocRef = RecruitAccess.getRecruitDocumentReference(mainActivity.currentUser.getUid());
+        userDocRef.addSnapshotListener(mainActivity, new EventListener<DocumentSnapshot>() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Recruit r = dataSnapshot.getValue(Recruit.class);
-                if (r != null) {
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (documentSnapshot.exists()) {
+                    Recruit r = documentSnapshot.toObject(Recruit.class);
                     recruitName.setText(r.getUsername());
                     recruitEmail.setText(r.getEmail());
-                    ref.removeEventListener(this);
+                    if (r.getPhotoUri() != null) {
+                        Picasso.with(mainActivity).load(Uri.parse(r.getPhotoUri())).transform(new CircleTransform()).into(profilePicture);
+                    }
                 }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
             }
         });
     }
