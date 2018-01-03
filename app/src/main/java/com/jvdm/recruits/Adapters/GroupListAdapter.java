@@ -27,10 +27,10 @@ import java.util.List;
  */
 
 public class GroupListAdapter extends ArrayAdapter<Group> {
+    public static final String GROUP_KEY_INTENT = "GROUP_KEY";
+
     public GroupListAdapter(@NonNull Context context, List<Group> list) {
         super(context, R.layout.fragment_groups_list_item, list);
-
-
     }
 
     @NonNull
@@ -56,12 +56,13 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
 
         viewHolder.name.setText(g.getKey());
         viewHolder.city.setText(g.getCity());
+        // TODO: set image
 
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.wtf("DAFUQ", g.getKey());
                 Intent intent = new Intent(getContext(), GroupDetailActivity.class);
+                intent.putExtra(GROUP_KEY_INTENT, g.getKey());
                 getContext().startActivity(intent);
             }
         });

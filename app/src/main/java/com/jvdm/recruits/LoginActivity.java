@@ -81,8 +81,6 @@ public class LoginActivity extends AppCompatActivity {
         properties.setCurrentRecruit(r);
         properties.listenForRecruit(RecruitAccess.getRecruitDocumentReference(key));
 
-        updateGroup();
-
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }

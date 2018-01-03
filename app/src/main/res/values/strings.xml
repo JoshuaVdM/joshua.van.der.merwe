@@ -41,6 +41,8 @@
     <string name="group_name">Group name</string>
     <string name="group_location">Group location</string>
     <string name="group_add">Add</string>
+    <string name="group_detail_tab">Group details</string>
+    <string name="group_chat_tab">Chat</string>
 
     <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
     <string name="facebook_application_id" translatable="false">1627493943938849</string>

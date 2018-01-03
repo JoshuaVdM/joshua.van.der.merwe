@@ -19,9 +19,13 @@ import android.view.ViewGroup;
 
 import android.widget.TextView;
 
+import com.jvdm.recruits.Adapters.GroupListAdapter;
+import com.jvdm.recruits.Fragments.GroupDetailFragment;
 import com.jvdm.recruits.R;
 
-public class GroupDetailActivity extends AppCompatActivity {
+public class GroupDetailActivity extends AppCompatActivity implements GroupDetailFragment.onGroupDetailFragmentInteractionListener {
+
+    String groupKey;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -42,6 +46,8 @@ public class GroupDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_detail);
+
+        groupKey = getIntent().getStringExtra(GroupListAdapter.GROUP_KEY_INTENT);
 
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
@@ -93,39 +99,9 @@ public class GroupDetailActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        public PlaceholderFragment() {
-        }
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_group_detail, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText("nb " + getArguments().getInt(ARG_SECTION_NUMBER));
-            return rootView;
-        }
+    @Override
+    public String getGroupKey() {
+        return groupKey;
     }
 
     /**
@@ -140,15 +116,22 @@ public class GroupDetailActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            Fragment fragment = null;
+            switch (position) {
+                case 0:
+                    fragment = new GroupDetailFragment();
+                    break;
+                case 1:
+                    fragment = new GroupDetailFragment();
+                    break;
+            }
+            return fragment;
         }
 
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return 2;
         }
     }
 }
