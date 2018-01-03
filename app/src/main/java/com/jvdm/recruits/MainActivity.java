@@ -178,9 +178,14 @@ public class MainActivity extends AppCompatActivity
 
     public void displaySelectedFragment(int id) {
         Fragment fragment = null;
+        Bundle args = null;
         switch (id) {
             case R.id.nav_groups:
+                args = new Bundle();
+                args.putBoolean("admin", false);
+
                 fragment = new GroupsFragment();
+                fragment.setArguments(args);
                 break;
             case R.id.nav_profile:
                 fragment = new ProfileFragment();
@@ -190,6 +195,13 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_verifications:
                 fragment = new RecruitVerificationFragment();
+                break;
+            case R.id.nav_groups_all:
+                args = new Bundle();
+                args.putBoolean("admin", true);
+
+                fragment = new GroupsFragment();
+                fragment.setArguments(args);
                 break;
         }
         if (fragment != null) {

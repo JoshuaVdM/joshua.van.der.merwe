@@ -45,7 +45,7 @@ public class RecruitAccess extends DataAccess {
         Recruit r = new Recruit();
         r.setUsername(displayname);
         r.setEmail(currentUser.getEmail());
-        r.setVerified(true);
+        r.setVerified(false);
         r.setPermissions(new Permission());
         r.getPermissions().setMember(true);
         if (currentUser.getPhotoUrl() != null) {
