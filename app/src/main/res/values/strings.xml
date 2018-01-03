@@ -21,7 +21,6 @@
     <!-- Strings related to profile -->
     <string name="profile_manage">Manage</string>
     <string name="profile_title">Profile</string>
-    <string name="profile_groups">My groups</string>
     <string name="profile_image">Profile picture</string>
     <string name="profile_edit">Edit profile</string>
     <string name="profile_description">About me</string>
@@ -29,8 +28,19 @@
     <string name="profile_action_save">Save</string>
     <string name="profile_accept_verification">Accept</string>
     <string name="profile_decline_verification">Decline</string>
-    <string name="profile_verifications_title">Recruit account verifications</string>
 
+    <!-- Admin strings -->
+    <string name="profile_verifications">Recruit account verifications</string>
+    <string name="profile_verifications_title">Verifications</string>
+    <string name="admin_title">Admin</string>
+
+    <!-- Strings related to groups -->
+    <string name="groups_user_groups">My groups</string>
+    <string name="groups_all_groups">All groups</string>
+    <string name="groups_add">New group</string>
+    <string name="group_name">Group name</string>
+    <string name="group_location">Group location</string>
+    <string name="group_add">Add</string>
 
     <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
     <string name="facebook_application_id" translatable="false">1627493943938849</string>
