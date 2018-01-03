@@ -74,9 +74,7 @@ public class GroupsFragment extends Fragment {
     private void setFabAction() {
         if (admin) {
             fab = mainActivity.findViewById(R.id.fab);
-
             fab.setImageResource(R.drawable.ic_add_white);
-
         }
     }
 
