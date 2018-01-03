@@ -90,8 +90,9 @@ public class LoginActivity extends AppCompatActivity {
     public void updateGroup() {
         Group g = new Group();
         g.setCity("Brussel");
+        g.setKey("Recruits Brussel Alpha");
 
-        GroupAccess.add("Recruits Brussel", g);
+        GroupAccess.add(g);
     }
 
     public void onNotVerified() {

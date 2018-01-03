@@ -42,8 +42,6 @@ public class RecruitVerificationAdapter extends ArrayAdapter<RecruitItem> {
 
         final ViewHolder viewHolder;
 
-        final View result;
-
         if (convertView == null) {
             viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(context);
@@ -54,11 +52,9 @@ public class RecruitVerificationAdapter extends ArrayAdapter<RecruitItem> {
             viewHolder.accept = convertView.findViewById(R.id.btn_accept);
             viewHolder.decline = convertView.findViewById(R.id.btn_decline);
 
-            result = convertView;
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
-            result = convertView;
         }
         viewHolder.accept.setOnClickListener(new View.OnClickListener() {
             @Override

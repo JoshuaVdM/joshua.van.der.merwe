@@ -1,12 +1,15 @@
 package com.jvdm.recruits.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -15,6 +18,8 @@ import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.jvdm.recruits.Activities.GroupDetailActivity;
+import com.jvdm.recruits.Adapters.GroupListAdapter;
 import com.jvdm.recruits.DataAccess.GroupAccess;
 import com.jvdm.recruits.DataAccess.RecruitAccess;
 import com.jvdm.recruits.MainActivity;
@@ -32,8 +37,8 @@ public class GroupsFragment extends Fragment {
     private View rootView;
     private ListView listView;
     private MainActivity mainActivity;
-    private List<String> values;
-    private ArrayAdapter adapter;
+    private List<Group> values;
+    private GroupListAdapter adapter;
     private Boolean admin = false;
     private FloatingActionButton fab;
 
@@ -60,7 +65,7 @@ public class GroupsFragment extends Fragment {
         setListListener();
         setFabAction();
 
-        adapter = new ArrayAdapter(getContext(), android.R.layout.simple_list_item_1, values);
+        adapter = new GroupListAdapter(mainActivity, values);
         listView.setAdapter(adapter);
 
         return rootView;
@@ -87,16 +92,18 @@ public class GroupsFragment extends Fragment {
                     }
 
                     for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
-                        String name = dc.getDocument().getId();
+                        Group g = dc.getDocument().toObject(Group.class);
+                        g.setKey(dc.getDocument().getId());
+
                         switch (dc.getType()) {
                             case ADDED:
-                                values.add(name);
+                                values.add(g);
                                 adapter.notifyDataSetChanged();
                                 break;
                             case MODIFIED:
                                 break;
                             case REMOVED:
-                                values.remove(name);
+                                values.remove(g);
                                 adapter.notifyDataSetChanged();
                                 break;
                         }
@@ -113,17 +120,17 @@ public class GroupsFragment extends Fragment {
                     }
 
                     for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
-                        String name = dc.getDocument().getId();
                         Group g = dc.getDocument().toObject(Group.class);
+                        g.setKey(dc.getDocument().getId());
                         switch (dc.getType()) {
                             case ADDED:
-                                values.add(name);
+                                values.add(g);
                                 adapter.notifyDataSetChanged();
                                 break;
                             case MODIFIED:
                                 break;
                             case REMOVED:
-                                values.remove(name);
+                                values.remove(g);
                                 adapter.notifyDataSetChanged();
                                 break;
                         }

@@ -41,13 +41,13 @@ public class GroupAccess extends DataAccess {
         return getGroupMembersCollectionReference(groupUid).document(recruitUid);
     }
 
-    public static void add(final String name, final Group group) {
-        add(name, group, new HashMap<String, GroupMember>());
+    public static void add(final Group group) {
+        add(group, new HashMap<String, GroupMember>());
     }
 
-    public static void add(final String name, final Group group, final HashMap<String, GroupMember> members) {
+    public static void add(final Group group, final HashMap<String, GroupMember> members) {
         // Get reference to group
-        final DocumentReference groupDocRef = getGroupDocumentReference(name);
+        final DocumentReference groupDocRef = getGroupDocumentReference(group.getKey());
 
         // Run transaction
         getDatabase().runTransaction(new Transaction.Function<Void>() {
@@ -67,13 +67,13 @@ public class GroupAccess extends DataAccess {
                     // Iterate over members
                     for (Map.Entry<String, GroupMember> member : members.entrySet()) {
                         // Set group member
-                        transaction.set(getGroupMemberDocumentReference(name, member.getKey()), member.getValue());
+                        transaction.set(getGroupMemberDocumentReference(group.getKey(), member.getKey()), member.getValue());
 
                         // Make recruitgroup object, to be put in recruit groups collection
                         HashMap<String, DocumentReference> recruitGroup = new HashMap<>();
                         recruitGroup.put("group", groupDocRef);
 
-                        transaction.set(RecruitAccess.getRecruitGroupDocumentReference(member.getKey(), name), recruitGroup);
+                        transaction.set(RecruitAccess.getRecruitGroupDocumentReference(member.getKey(), group.getKey()), recruitGroup);
                     }
                 }
                 return null;
