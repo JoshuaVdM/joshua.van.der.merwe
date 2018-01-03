@@ -8,9 +8,8 @@ import com.google.firebase.firestore.DocumentReference;
 
 public class GroupMember {
     private DocumentReference recruitReference;
-    private Permission permissions;
     private Role role;
-    private Boolean verified;
+    private InvitationState state;
 
     // Constructors
     public GroupMember() {
@@ -25,14 +24,6 @@ public class GroupMember {
         this.recruitReference = recruitReference;
     }
 
-    public Permission getPermissions() {
-        return permissions;
-    }
-
-    public void setPermissions(Permission permissions) {
-        this.permissions = permissions;
-    }
-
     public Role getRole() {
         return role;
     }
@@ -41,11 +32,11 @@ public class GroupMember {
         this.role = role;
     }
 
-    public Boolean getVerified() {
-        return verified;
+    public InvitationState getState() {
+        return state;
     }
 
-    public void setVerified(Boolean verified) {
-        this.verified = verified;
+    public void setState(InvitationState state) {
+        this.state = state;
     }
 }

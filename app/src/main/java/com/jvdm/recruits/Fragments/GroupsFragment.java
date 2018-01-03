@@ -2,6 +2,7 @@ package com.jvdm.recruits.Fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -9,19 +10,25 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Transaction;
 import com.jvdm.recruits.Activities.GroupDetailActivity;
 import com.jvdm.recruits.Adapters.GroupListAdapter;
+import com.jvdm.recruits.DataAccess.DataAccess;
 import com.jvdm.recruits.DataAccess.GroupAccess;
 import com.jvdm.recruits.DataAccess.RecruitAccess;
+import com.jvdm.recruits.Dialog.AddGroupDialog;
 import com.jvdm.recruits.MainActivity;
 import com.jvdm.recruits.Model.Group;
 import com.jvdm.recruits.R;
@@ -63,7 +70,7 @@ public class GroupsFragment extends Fragment {
         }
 
         setListListener();
-        setFabAction();
+        initFab();
 
         adapter = new GroupListAdapter(mainActivity, values);
         listView.setAdapter(adapter);
@@ -71,10 +78,53 @@ public class GroupsFragment extends Fragment {
         return rootView;
     }
 
-    private void setFabAction() {
+    private void initFab() {
         if (admin) {
-            fab = mainActivity.findViewById(R.id.fab);
-            fab.setImageResource(R.drawable.ic_add_white);
+            fab = rootView.findViewById(R.id.fab_add_group);
+            fab.setVisibility(View.VISIBLE);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    new AddGroupDialog(getContext(), new AddGroupDialog.onAddGroupDialogListener() {
+                        @Override
+                        public void onGroupAdded(final Group g) {
+                            final DocumentReference groupRef = GroupAccess.getGroupDocumentReference(g.getKey());
+                            DataAccess.getDatabase().runTransaction(new Transaction.Function<Integer>() {
+
+                                @Nullable
+                                @Override
+                                public Integer apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                                    DocumentSnapshot snapshot = transaction.get(groupRef);
+                                    if (snapshot.exists()) {
+                                        Group group = snapshot.toObject(Group.class);
+                                        transaction.set(groupRef, group);
+                                        return 1;
+                                    } else {
+                                        transaction.set(groupRef, g);
+                                        return 0;
+                                    }
+                                }
+                            }).addOnSuccessListener(new OnSuccessListener<Integer>() {
+                                @Override
+                                public void onSuccess(Integer added) {
+                                    if (added == 0) {
+                                        Intent intent = new Intent(getContext(), GroupDetailActivity.class);
+                                        intent.putExtra(GroupListAdapter.GROUP_KEY_INTENT, g.getKey());
+                                        getContext().startActivity(intent);
+                                    } else {
+                                        Toast.makeText(mainActivity, "Error while adding group " + added, Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(mainActivity, "ERRORR", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    });
+                }
+            });
         }
     }
 

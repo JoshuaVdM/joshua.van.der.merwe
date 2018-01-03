@@ -6,5 +6,5 @@ package com.jvdm.recruits.Model;
 
 public enum Role {
     LEADER,
-    MEMBER,
+    MEMBER
 }

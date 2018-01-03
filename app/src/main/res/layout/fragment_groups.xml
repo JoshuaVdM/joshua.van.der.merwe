@@ -1,7 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ListView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/list_groups"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
 
-</ListView>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <ListView
+        android:id="@+id/list_groups"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:listitem="@layout/fragment_groups_list_item"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_add_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        app:srcCompat="@drawable/ic_add_white"
+        app:layout_anchor="@id/list_groups"
+        app:layout_anchorGravity="bottom|right|end"
+        android:visibility="gone"/>
+
+
+</android.support.design.widget.CoordinatorLayout>

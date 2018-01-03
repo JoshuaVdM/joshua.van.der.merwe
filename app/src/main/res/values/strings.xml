@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Recruits</string>
+    <string name="action_add">Add</string>
+    <string name="action_cancel">Cancel</string>
 
     <!-- Strings related to login/out -->
     <string name="prompt_email">Email</string>
@@ -44,6 +46,8 @@
     <string name="group_detail_tab">Group details</string>
     <string name="group_chat_tab">Chat</string>
     <string name="group_members">Members</string>
+    <string name="group_add_title">Add group</string>
+    <string name="group_city">City</string>
 
     <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
     <string name="facebook_application_id" translatable="false">1627493943938849</string>

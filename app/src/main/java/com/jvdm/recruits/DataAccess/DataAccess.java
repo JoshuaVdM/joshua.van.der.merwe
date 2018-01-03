@@ -17,7 +17,7 @@ public class DataAccess {
         return getFirebaseAuth().getCurrentUser();
     }
 
-    protected static FirebaseFirestore getDatabase() {
+    public static FirebaseFirestore getDatabase() {
         return FirebaseFirestore.getInstance();
     }
 }
