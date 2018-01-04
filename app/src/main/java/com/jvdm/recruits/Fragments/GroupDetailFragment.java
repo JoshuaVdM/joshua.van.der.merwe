@@ -3,13 +3,11 @@ package com.jvdm.recruits.Fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -17,7 +15,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -26,9 +23,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.Transaction;
 import com.jvdm.recruits.Adapters.MemberListAdapter;
-import com.jvdm.recruits.DataAccess.DataAccess;
 import com.jvdm.recruits.DataAccess.GroupAccess;
 import com.jvdm.recruits.DataAccess.RecruitAccess;
 import com.jvdm.recruits.Dialog.AddGroupMemberDialog;
@@ -40,7 +35,6 @@ import com.jvdm.recruits.Model.Role;
 import com.jvdm.recruits.Properties;
 import com.jvdm.recruits.R;
 
-import java.lang.annotation.Documented;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -108,7 +102,11 @@ public class GroupDetailFragment extends Fragment {
                     GroupMember groupMember = dc.getDocument().toObject(GroupMember.class);
                     switch (dc.getType()) {
                         case ADDED:
-                            if (!dc.getDocument().getId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                            if (!dc.getDocument()
+                                    .getId()
+                                    .equals(FirebaseAuth.getInstance()
+                                            .getCurrentUser()
+                                            .getUid())) {
                                 groupMembers.add(groupMember);
                                 adapter.notifyDataSetChanged();
                             }
@@ -162,43 +160,58 @@ public class GroupDetailFragment extends Fragment {
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    new AddGroupMemberDialog(getContext(), new AddGroupMemberDialog.onAddGroupMemberDialogListener() {
-                        @Override
-                        public void onGroupMemberSelected(String uid) {
-                            final DocumentReference recruitGroupRef = RecruitAccess
-                                    .getRecruitGroupDocumentReference(uid,
-                                            groupUid);
-                            final GroupMember gm = new GroupMember();
-                            gm.setRecruitReference(RecruitAccess.getRecruitDocumentReference(uid));
-                            gm.setRole(Role.MEMBER);
-                            gm.setState(InvitationState.PENDING);
-                            recruitGroupRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    new AddGroupMemberDialog(getContext(),
+                            new AddGroupMemberDialog.onAddGroupMemberDialogListener() {
                                 @Override
-                                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                    if (task.isSuccessful()) {
-                                        DocumentSnapshot snapshot = task.getResult();
-                                        if (!snapshot.exists()) {
-                                            HashMap<String, GroupMember> membersToAdd;
-                                            membersToAdd = new HashMap<String, GroupMember>();
-                                            membersToAdd.put(gm.getRecruitReference().getId(), gm);
-                                            GroupAccess.updateOrAddGroupMembers(groupUid, membersToAdd);
-                                            Toast.makeText(getContext(),
-                                                    getContext().getString(R.string.group_member_added),
-                                                    Toast.LENGTH_SHORT).show();
-                                        } else {
-                                            Toast.makeText(getContext(),
-                                                    getContext()
-                                                            .getString(R.string.group_add_member_already_member),
-                                                    Toast.LENGTH_SHORT)
-                                                    .show();
-                                        }
-                                    } else {
-                                        return;
-                                    }
+                                public void onGroupMemberSelected(String uid) {
+                                    final DocumentReference recruitGroupRef = RecruitAccess
+                                            .getRecruitGroupDocumentReference(uid,
+                                                    groupUid);
+                                    final GroupMember gm = new GroupMember();
+                                    gm.setRecruitReference(
+                                            RecruitAccess.getRecruitDocumentReference(uid));
+                                    gm.setRole(Role.MEMBER);
+                                    gm.setState(InvitationState.PENDING);
+                                    recruitGroupRef.get().addOnCompleteListener(
+                                            new OnCompleteListener<DocumentSnapshot>() {
+                                                @Override
+                                                public void onComplete(
+                                                        @NonNull Task<DocumentSnapshot> task) {
+                                                    if (task.isSuccessful()) {
+                                                        DocumentSnapshot snapshot =
+                                                                task.getResult();
+                                                        if (!snapshot.exists()) {
+                                                            HashMap<String, GroupMember>
+                                                                    membersToAdd;
+                                                            membersToAdd =
+                                                                    new HashMap<String,
+                                                                            GroupMember>();
+                                                            membersToAdd.put(
+                                                                    gm.getRecruitReference()
+                                                                            .getId(),
+                                                                    gm);
+                                                            GroupAccess.updateOrAddGroupMembers(
+                                                                    groupUid,
+                                                                    membersToAdd);
+                                                            Toast.makeText(getContext(),
+                                                                    getContext().getString(
+                                                                            R.string.group_member_added),
+                                                                    Toast.LENGTH_SHORT).show();
+                                                        } else {
+                                                            Toast.makeText(getContext(),
+                                                                    getContext()
+                                                                            .getString(
+                                                                                    R.string.group_add_member_already_member),
+                                                                    Toast.LENGTH_SHORT)
+                                                                    .show();
+                                                        }
+                                                    } else {
+                                                        return;
+                                                    }
+                                                }
+                                            });
                                 }
                             });
-                        }
-                    });
                 }
             });
         }
@@ -210,7 +223,8 @@ public class GroupDetailFragment extends Fragment {
         if (context instanceof onGroupDetailFragmentInteractionListener) {
             listener = (onGroupDetailFragmentInteractionListener) context;
         } else {
-            throw new RuntimeException(context.toString() + " must implement onGroupDetailFragmentInteractionListener.");
+            throw new RuntimeException(context.toString()
+                    + " must implement onGroupDetailFragmentInteractionListener.");
         }
     }
 

@@ -35,7 +35,9 @@ public class ProfileFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_profile, container, false);
         mainActivity = (MainActivity) getActivity();
         mainActivity.setTitle(getResources().getString(R.string.profile_title));
@@ -61,7 +63,8 @@ public class ProfileFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        DocumentReference userDocRef = RecruitAccess.getRecruitDocumentReference(mainActivity.currentUser.getUid());
+        DocumentReference userDocRef;
+        userDocRef = RecruitAccess.getRecruitDocumentReference(mainActivity.currentUser.getUid());
         userDocRef.addSnapshotListener(mainActivity, new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -70,7 +73,10 @@ public class ProfileFragment extends Fragment {
                     recruitName.setText(r.getUsername());
                     recruitEmail.setText(r.getEmail());
                     if (r.getPhotoUri() != null) {
-                        Picasso.with(mainActivity).load(Uri.parse(r.getPhotoUri())).transform(new CircleTransform()).into(profilePicture);
+                        Picasso.with(mainActivity)
+                                .load(Uri.parse(r.getPhotoUri()))
+                                .transform(new CircleTransform())
+                                .into(profilePicture);
                     }
                 }
             }

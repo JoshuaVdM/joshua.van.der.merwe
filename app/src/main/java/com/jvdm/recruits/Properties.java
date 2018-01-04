@@ -6,10 +6,6 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.jvdm.recruits.Model.Recruit;
 
-/**
- * Created by Joske on 30/12/17.
- */
-
 public class Properties {
     private static Properties instance = null;
 
@@ -17,7 +13,7 @@ public class Properties {
     private Recruit currentRecruit = null;
     private DocumentReference currentRecruitRef = null;
 
-    protected Properties() {
+    private Properties() {
     }
 
     public static synchronized Properties getInstance() {
@@ -39,7 +35,7 @@ public class Properties {
         return currentRecruit;
     }
 
-    public void setCurrentRecruit(Recruit currentRecruit) {
+    void setCurrentRecruit(Recruit currentRecruit) {
         this.currentRecruit = currentRecruit;
     }
 
@@ -51,7 +47,7 @@ public class Properties {
         this.currentRecruitRef = currentRecruitRef;
     }
 
-    public void listenForRecruit(DocumentReference reference) {
+    void listenForRecruit(DocumentReference reference) {
         currentRecruitRef = reference;
         reference.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override

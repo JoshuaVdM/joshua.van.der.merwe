@@ -18,10 +18,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.jvdm.recruits.Adapters.RecruitsAutoCompleteAdapter;
 import com.jvdm.recruits.DataAccess.RecruitAccess;
-import com.jvdm.recruits.Model.GroupMember;
-import com.jvdm.recruits.Model.InvitationState;
 import com.jvdm.recruits.Model.Recruit;
-import com.jvdm.recruits.Model.Role;
 import com.jvdm.recruits.R;
 
 import java.util.ArrayList;
@@ -32,14 +29,14 @@ import java.util.List;
  */
 
 public class AddGroupMemberDialog extends AlertDialog.Builder {
+    private static final String[] COUNTRIES = new String[]{
+            "Belgium", "France", "Italy", "Germany", "Spain"
+    };
     private onAddGroupMemberDialogListener listener;
     private List<Recruit> recruits;
     private RecruitsAutoCompleteAdapter adapter;
     private Recruit selectedRecruit;
     private AutoCompleteTextView textView;
-    private static final String[] COUNTRIES = new String[]{
-            "Belgium", "France", "Italy", "Germany", "Spain"
-    };
 
     public AddGroupMemberDialog(Context context, onAddGroupMemberDialogListener listener) {
         super(context);
@@ -56,7 +53,7 @@ public class AddGroupMemberDialog extends AlertDialog.Builder {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-                            for (DocumentSnapshot snapshot: task.getResult()) {
+                            for (DocumentSnapshot snapshot : task.getResult()) {
                                 Recruit r = snapshot.toObject(Recruit.class);
                                 r.setUid(snapshot.getId());
                                 adapter.add(r);
@@ -73,14 +70,15 @@ public class AddGroupMemberDialog extends AlertDialog.Builder {
         final AlertDialog dialog = create();
         dialog.show();
 
-        adapter = new RecruitsAutoCompleteAdapter(getContext(), recruits, new RecruitsAutoCompleteAdapter.onRecruitsAutoCompleteAdapterInteractionListener() {
-            @Override
-            public void onRecruitSelected(Recruit r) {
-                textView.setText(r.getUsername());
-                textView.dismissDropDown();
-                selectedRecruit = r;
-            }
-        });
+        adapter = new RecruitsAutoCompleteAdapter(getContext(), recruits,
+                new RecruitsAutoCompleteAdapter.onRecruitsAutoCompleteAdapterInteractionListener() {
+                    @Override
+                    public void onRecruitSelected(Recruit r) {
+                        textView.setText(r.getUsername());
+                        textView.dismissDropDown();
+                        selectedRecruit = r;
+                    }
+                });
 
         initRecruits();
 
@@ -113,7 +111,10 @@ public class AddGroupMemberDialog extends AlertDialog.Builder {
             @Override
             public void onClick(View view) {
                 if (selectedRecruit == null) {
-                    Toast.makeText(getContext(), getContext().getString(R.string.recruit_selection_invalid), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(
+                            getContext(),
+                            getContext().getString(R.string.recruit_selection_invalid),
+                            Toast.LENGTH_SHORT).show();
                 } else {
                     listener.onGroupMemberSelected(selectedRecruit.getUid());
                     dialog.cancel();

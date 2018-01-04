@@ -3,10 +3,6 @@ package com.jvdm.recruits.Model;
 import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.IgnoreExtraProperties;
 
-/**
- * Created by Joske on 23/12/17.
- */
-
 @IgnoreExtraProperties
 public class Recruit {
     @Exclude

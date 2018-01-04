@@ -49,7 +49,10 @@ public class ProfileEditActivity extends AppCompatActivity {
         recruitEmail.setText(r.getEmail());
         recruitDescription.setText(r.getDescription());
         if (r.getPhotoUri() != null) {
-            Picasso.with(this).load(Uri.parse(r.getPhotoUri())).transform(new CircleTransform()).into(profilePicture);
+            Picasso.with(this)
+                    .load(Uri.parse(r.getPhotoUri()))
+                    .transform(new CircleTransform())
+                    .into(profilePicture);
         }
     }
 

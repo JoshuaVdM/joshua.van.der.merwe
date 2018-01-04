@@ -2,7 +2,6 @@
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -10,12 +9,12 @@
         android:id="@+id/img_recruit"
         android:layout_width="71dp"
         android:layout_height="49dp"
+        android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_person_black"
-        android:layout_marginLeft="8dp" />
+        app:srcCompat="@drawable/ic_person_black" />
 
     <TextView
         android:id="@+id/tv_member_role"

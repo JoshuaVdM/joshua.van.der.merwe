@@ -2,9 +2,6 @@ package com.jvdm.recruits.Model;
 
 import com.google.firebase.firestore.Exclude;
 
-/**
- * Created by Joske on 23/12/17.
- */
 
 public class Group {
     @Exclude

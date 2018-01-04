@@ -1,14 +1,13 @@
 package com.jvdm.recruits.Activities;
 
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.view.MenuItem;
+import android.widget.Toast;
 
-import com.jvdm.recruits.Helpers.Helper;
 import com.jvdm.recruits.Properties;
 import com.jvdm.recruits.R;
 
@@ -20,19 +19,23 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
      */
-    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object newValue) {
-            String stringValue = newValue.toString();
+    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener;
 
-            if (preference instanceof ListPreference) {
-                // TODO:
-                // implementation
+    static {
+        sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                String stringValue = newValue.toString();
+
+                if (preference instanceof ListPreference) {
+                    // TODO:
+                    // implementation
+                    return true;
+                }
                 return true;
             }
-            return true;
-        }
-    };
+        };
+    }
 
     private static void bindPreferenceSummaryToValue(Preference preference) {
         preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
@@ -50,7 +53,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // load settings fragment
-        getFragmentManager().beginTransaction().replace(android.R.id.content, new MainPreferenceFragment()).commit();
+        getFragmentManager().beginTransaction()
+                .replace(android.R.id.content, new MainPreferenceFragment())
+                .commit();
     }
 
     @Override
@@ -67,20 +72,24 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_main);
 
-            final CheckBoxPreference checkboxPref = (CheckBoxPreference) getPreferenceManager().findPreference("checkboxPref");
-            Preference dataPersistence = (findPreference(getString(R.string.pref_data_persistence_key)));
-            dataPersistence.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    Properties properties = Properties.getInstance();
-                    properties.setDataPersistenceChanged(!properties.isDataPersistenceChanged());
+            Preference dataPersistence = (findPreference(
+                    getString(R.string.pref_data_persistence_key)));
+            dataPersistence.setOnPreferenceChangeListener(
+                    new Preference.OnPreferenceChangeListener() {
+                        @Override
+                        public boolean onPreferenceChange(Preference preference, Object newValue) {
+                            Properties properties = Properties.getInstance();
+                            properties.setDataPersistenceChanged(
+                                    !properties.isDataPersistenceChanged());
 
-                    if (properties.isDataPersistenceChanged()) {
-                        Helper.showShortToast(getActivity(), getString(R.string.pref_restart_required));
-                    }
-                    return true;
-                }
-            });
+                            if (properties.isDataPersistenceChanged()) {
+                                Toast.makeText(getActivity(),
+                                        R.string.pref_restart_required,
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                            return true;
+                        }
+                    });
         }
     }
 }

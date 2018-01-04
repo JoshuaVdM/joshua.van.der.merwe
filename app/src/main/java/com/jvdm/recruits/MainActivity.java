@@ -5,9 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
@@ -17,7 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -60,7 +57,8 @@ public class MainActivity extends AppCompatActivity
 
         context = this;
 
-        Recruit r = Properties.getInstance().getCurrentRecruit();
+        Recruit r = Properties.getInstance()
+                .getCurrentRecruit();
 
         // Initialise auth
         auth = FirebaseAuth.getInstance();
@@ -79,8 +77,13 @@ public class MainActivity extends AppCompatActivity
 
         // Initialize drawer toggle
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        ActionBarDrawerToggle toggle;
+        toggle = new ActionBarDrawerToggle(
+                this,
+                drawer,
+                toolbar,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -91,19 +94,24 @@ public class MainActivity extends AppCompatActivity
         displaySelectedFragment(R.id.nav_groups);
 
         // Set recruit info fields listeners
-        recruitName = navigationView.getHeaderView(0).findViewById(R.id.text_recruit_name);
-        recruitEmail = navigationView.getHeaderView(0).findViewById(R.id.text_recruit_email);
-        profilePicture = navigationView.getHeaderView(0).findViewById(R.id.image_profile);
+        recruitName = navigationView.getHeaderView(0)
+                .findViewById(R.id.text_recruit_name);
+        recruitEmail = navigationView.getHeaderView(0)
+                .findViewById(R.id.text_recruit_email);
+        profilePicture = navigationView.getHeaderView(0)
+                .findViewById(R.id.image_profile);
 
 
-        navigationView.getMenu().clear();
+        navigationView.getMenu()
+                .clear();
         if (Properties.getInstance().getCurrentRecruit().getPermissions().isAdmin()) {
             navigationView.inflateMenu(R.menu.activity_main_drawer_admin);
         } else {
             navigationView.inflateMenu(R.menu.activity_main_drawer);
         }
 
-        DocumentReference userDocRef = RecruitAccess.getRecruitDocumentReference(currentUser.getUid());
+        DocumentReference userDocRef = RecruitAccess.getRecruitDocumentReference(
+                currentUser.getUid());
         userDocRef.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
@@ -112,7 +120,8 @@ public class MainActivity extends AppCompatActivity
                     recruitName.setText(r.getUsername());
                     recruitEmail.setText(currentUser.getUid());
                     if (r.getPhotoUri() != null) {
-                        Picasso.with(context).load(Uri.parse(r.getPhotoUri())).transform(new CircleTransform()).into(profilePicture);
+                        Picasso.with(context).load(Uri.parse(r.getPhotoUri())).transform(
+                                new CircleTransform()).into(profilePicture);
                     }
                 }
             }

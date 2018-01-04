@@ -40,8 +40,12 @@ public class RecruitVerificationFragment extends ListFragment {
     }*/
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_recruit_verification, container, false);
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
+        rootView = inflater.inflate(R.layout.fragment_recruit_verification,
+                container,
+                false);
         mainActivity = (MainActivity) getActivity();
         listView = rootView.findViewById(android.R.id.list);
 

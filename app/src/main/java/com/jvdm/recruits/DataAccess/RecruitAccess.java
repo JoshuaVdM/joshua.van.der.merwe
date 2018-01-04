@@ -10,10 +10,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.jvdm.recruits.Model.Permission;
 import com.jvdm.recruits.Model.Recruit;
 
-/**
- * Created by Joske on 23/12/17.
- */
-
 public class RecruitAccess extends DataAccess {
     @NonNull
     public static CollectionReference getRecruitsCollectionReference() {
@@ -28,22 +24,27 @@ public class RecruitAccess extends DataAccess {
         return getRecruitDocumentReference(uid).collection("groups");
     }
 
-    public static CollectionReference getRecruitGroupsCollectionReference(DocumentReference recruitReference) {
+    public static CollectionReference getRecruitGroupsCollectionReference(
+            DocumentReference recruitReference) {
         return recruitReference.collection("groups");
     }
 
-    public static DocumentReference getRecruitGroupDocumentReference(String userUid, String groupUid) {
+    public static DocumentReference getRecruitGroupDocumentReference(
+            String userUid,
+            String groupUid) {
         return getRecruitGroupsCollectionReference(userUid).document(groupUid);
     }
 
-    public static DocumentReference getRecruitGroupDocumentReference(DocumentReference recruitReference, String groupUid) {
+    public static DocumentReference getRecruitGroupDocumentReference(
+            DocumentReference recruitReference,
+            String groupUid) {
         return getRecruitGroupsCollectionReference(recruitReference).document(groupUid);
     }
 
     public static void add(FirebaseUser currentUser) {
         String displayname = currentUser.getDisplayName();
         if (displayname == null) {
-            for (UserInfo profile: currentUser.getProviderData()) {
+            for (UserInfo profile : currentUser.getProviderData()) {
                 if (!TextUtils.isEmpty(profile.getDisplayName())) {
                     displayname = profile.getDisplayName();
                     break;
@@ -65,7 +66,7 @@ public class RecruitAccess extends DataAccess {
     }
 
     public static void updateRecruitVerified(String key, Boolean verified) {
-        getRecruitDocumentReference(key).update("verified", true);
+        getRecruitDocumentReference(key).update("verified", verified);
     }
 
     public static void declineRecruitVerification(String key) {

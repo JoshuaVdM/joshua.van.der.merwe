@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -59,7 +58,9 @@ public class GroupsFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_groups, container, false);
 
         mainActivity = (MainActivity) getActivity();
@@ -88,37 +89,46 @@ public class GroupsFragment extends Fragment {
                     new AddGroupDialog(getContext(), new AddGroupDialog.onAddGroupDialogListener() {
                         @Override
                         public void onGroupAdded(final Group g) {
-                            final DocumentReference groupRef = GroupAccess.getGroupDocumentReference(g.getKey());
-                            DataAccess.getDatabase().runTransaction(new Transaction.Function<Integer>() {
+                            final DocumentReference groupRef;
+                            groupRef = GroupAccess.getGroupDocumentReference(g.getKey());
+                            DataAccess.getDatabase()
+                                    .runTransaction(new Transaction.Function<Integer>() {
 
-                                @Nullable
-                                @Override
-                                public Integer apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
-                                    DocumentSnapshot snapshot = transaction.get(groupRef);
-                                    if (snapshot.exists()) {
-                                        Group group = snapshot.toObject(Group.class);
-                                        transaction.set(groupRef, group);
-                                        return 1;
-                                    } else {
-                                        transaction.set(groupRef, g);
-                                        return 0;
-                                    }
-                                }
-                            }).addOnSuccessListener(new OnSuccessListener<Integer>() {
+                                        @Nullable
+                                        @Override
+                                        public Integer apply(@NonNull Transaction transaction)
+                                                throws FirebaseFirestoreException {
+                                            DocumentSnapshot snapshot = transaction.get(groupRef);
+                                            if (snapshot.exists()) {
+                                                Group group = snapshot.toObject(Group.class);
+                                                transaction.set(groupRef, group);
+                                                return 1;
+                                            } else {
+                                                transaction.set(groupRef, g);
+                                                return 0;
+                                            }
+                                        }
+                                    }).addOnSuccessListener(new OnSuccessListener<Integer>() {
                                 @Override
                                 public void onSuccess(Integer added) {
                                     if (added == 0) {
-                                        Intent intent = new Intent(getContext(), GroupDetailActivity.class);
-                                        intent.putExtra(GroupListAdapter.GROUP_KEY_INTENT, g.getKey());
+                                        Intent intent = new Intent(getContext(),
+                                                GroupDetailActivity.class);
+                                        intent.putExtra(GroupListAdapter.GROUP_KEY_INTENT,
+                                                g.getKey());
                                         getContext().startActivity(intent);
                                     } else {
-                                        Toast.makeText(mainActivity, "Error while adding group " + added, Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(mainActivity,
+                                                "Error while adding group " + added,
+                                                Toast.LENGTH_SHORT).show();
                                     }
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(mainActivity, "ERRORR", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(mainActivity,
+                                            "ERRORR",
+                                            Toast.LENGTH_SHORT).show();
                                 }
                             });
                         }
@@ -131,7 +141,8 @@ public class GroupsFragment extends Fragment {
     private void setListListener() {
         CollectionReference groupsRef;
         if (!admin) {
-            groupsRef = RecruitAccess.getRecruitGroupsCollectionReference(mainActivity.currentUser.getUid());
+            groupsRef = RecruitAccess.
+                    getRecruitGroupsCollectionReference(mainActivity.currentUser.getUid());
             groupsRef.addSnapshotListener(mainActivity, new EventListener<QuerySnapshot>() {
                 @Override
                 public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {

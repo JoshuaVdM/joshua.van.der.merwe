@@ -37,7 +37,8 @@ public class GroupAccess extends DataAccess {
         return getGroupDocumentReference(uid).collection("members");
     }
 
-    public static DocumentReference getGroupMemberDocumentReference(String groupUid, String recruitUid) {
+    public static DocumentReference getGroupMemberDocumentReference(String groupUid,
+                                                                    String recruitUid) {
         return getGroupMembersCollectionReference(groupUid).document(recruitUid);
     }
 
@@ -67,13 +68,21 @@ public class GroupAccess extends DataAccess {
                     // Iterate over members
                     for (Map.Entry<String, GroupMember> member : members.entrySet()) {
                         // Set group member
-                        transaction.set(getGroupMemberDocumentReference(group.getKey(), member.getKey()), member.getValue());
+                        transaction.set(getGroupMemberDocumentReference(
+                                group.getKey(),
+                                member.getKey()),
+                                member.getValue()
+                        );
 
                         // Make recruitgroup object, to be put in recruit groups collection
                         HashMap<String, DocumentReference> recruitGroup = new HashMap<>();
                         recruitGroup.put("group", groupDocRef);
 
-                        transaction.set(RecruitAccess.getRecruitGroupDocumentReference(member.getKey(), group.getKey()), recruitGroup);
+                        transaction.set(RecruitAccess.getRecruitGroupDocumentReference(
+                                member.getKey(),
+                                group.getKey()),
+                                recruitGroup
+                        );
                     }
                 }
                 return null;
@@ -97,7 +106,9 @@ public class GroupAccess extends DataAccess {
         });
     }
 
-    public static void updateOrAddGroupMembers(final String name, final HashMap<String, GroupMember> members) {
+    public static void updateOrAddGroupMembers(
+            final String name,
+            final HashMap<String, GroupMember> members) {
         final DocumentReference groupDocRef = getGroupDocumentReference(name);
 
         getDatabase().runTransaction(new Transaction.Function<Void>() {
@@ -110,12 +121,20 @@ public class GroupAccess extends DataAccess {
                 } else {
                     transaction.set(groupDocRef, snapshot.toObject(Group.class));
                     for (Map.Entry<String, GroupMember> member : members.entrySet()) {
-                        transaction.set(getGroupMemberDocumentReference(name, member.getKey()), member.getValue());
+                        transaction.set(getGroupMemberDocumentReference(
+                                name,
+                                member.getKey()),
+                                member.getValue()
+                        );
 
                         HashMap<String, DocumentReference> recruitGroup = new HashMap<>();
                         recruitGroup.put("group", groupDocRef);
 
-                        transaction.set(RecruitAccess.getRecruitGroupDocumentReference(member.getKey(), name), recruitGroup);
+                        transaction.set(
+                                RecruitAccess.getRecruitGroupDocumentReference(
+                                        member.getKey(),
+                                        name),
+                                recruitGroup);
                     }
                 }
                 return null;
@@ -147,7 +166,8 @@ public class GroupAccess extends DataAccess {
                     transaction.set(groupDocRef, snapshot.toObject(Group.class));
                     for (String uid : members) {
                         transaction.delete(getGroupMemberDocumentReference(name, uid));
-                        transaction.delete(RecruitAccess.getRecruitGroupDocumentReference(uid, name));
+                        transaction.delete(RecruitAccess.
+                                getRecruitGroupDocumentReference(uid, name));
                     }
                 }
                 return null;

@@ -8,7 +8,7 @@
         app:showAsAction="never" />
     <item
         android:id="@+id/action_edit"
+        android:icon="@drawable/ic_edit_black"
         android:title="@string/profile_edit"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_edit_black" />
+        app:showAsAction="ifRoom" />
 </menu>

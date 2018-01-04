@@ -4,22 +4,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jvdm.recruits.Activities.GroupDetailActivity;
-import com.jvdm.recruits.Fragments.GroupsFragment;
 import com.jvdm.recruits.Model.Group;
-import com.jvdm.recruits.Model.RecruitItem;
 import com.jvdm.recruits.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -43,7 +38,8 @@ public class GroupListAdapter extends ArrayAdapter<Group> {
         if (convertView == null) {
             viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.fragment_groups_list_item, parent, false);
+            convertView = inflater
+                    .inflate(R.layout.fragment_groups_list_item, parent, false);
 
             viewHolder.image = convertView.findViewById(R.id.img_group);
             viewHolder.name = convertView.findViewById(R.id.txt_group_name);

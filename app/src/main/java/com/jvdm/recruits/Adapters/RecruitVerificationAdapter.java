@@ -10,10 +10,10 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jvdm.recruits.DataAccess.RecruitAccess;
 import com.jvdm.recruits.Helpers.CircleTransform;
-import com.jvdm.recruits.Helpers.Helper;
 import com.jvdm.recruits.Model.RecruitItem;
 import com.jvdm.recruits.R;
 import com.squareup.picasso.Picasso;
@@ -45,7 +45,10 @@ public class RecruitVerificationAdapter extends ArrayAdapter<RecruitItem> {
         if (convertView == null) {
             viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(context);
-            convertView = inflater.inflate(R.layout.fragment_recruit_verification_list_item, parent, false);
+            convertView = inflater
+                    .inflate(R.layout.fragment_recruit_verification_list_item,
+                            parent,
+                            false);
 
             viewHolder.image = convertView.findViewById(R.id.img_recruit);
             viewHolder.name = convertView.findViewById(R.id.txt_recruit_name);
@@ -61,7 +64,7 @@ public class RecruitVerificationAdapter extends ArrayAdapter<RecruitItem> {
             public void onClick(View v) {
                 String key = recruitItem.getUid();
                 RecruitAccess.updateRecruitVerified(key, true);
-                Helper.showShortToast(context, "Account request accepted");
+                Toast.makeText(context, "Account request accepted", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -70,12 +73,15 @@ public class RecruitVerificationAdapter extends ArrayAdapter<RecruitItem> {
             public void onClick(View v) {
                 String key = recruitItem.getUid();
                 RecruitAccess.declineRecruitVerification(key);
-                Helper.showShortToast(context, "Account request denied");
+                Toast.makeText(context, "Account request denied", Toast.LENGTH_SHORT).show();
             }
         });
 
         viewHolder.name.setText(recruitItem.getName());
-        Picasso.with(context).load(recruitItem.getPictureUri()).transform(new CircleTransform()).into(viewHolder.image);
+        Picasso.with(context)
+                .load(recruitItem.getPictureUri())
+                .transform(new CircleTransform())
+                .into(viewHolder.image);
 
         return convertView;
     }

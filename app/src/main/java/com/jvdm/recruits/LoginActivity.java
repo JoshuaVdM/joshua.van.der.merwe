@@ -106,48 +106,53 @@ public class LoginActivity extends AppCompatActivity {
         builder.setMessage(getString(R.string.msg_not_verified))
                 .setTitle(getString(R.string.title_not_verified));
 
-        builder.setPositiveButton(getString(R.string.action_choose_account), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                onSignOut();
-            }
-        });
+        builder.setPositiveButton(
+                getString(R.string.action_choose_account),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        onSignOut();
+                    }
+                });
 
-        builder.setNegativeButton(getString(R.string.action_exit_app), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-                AuthUI.getInstance()
-                        .signOut(getApplicationContext());
-                finish();
-                moveTaskToBack(true);
-            }
-        });
+        builder.setNegativeButton(
+                getString(R.string.action_exit_app),
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        AuthUI.getInstance()
+                                .signOut(getApplicationContext());
+                        finish();
+                        moveTaskToBack(true);
+                    }
+                });
 
         builder.create().show();
     }
 
     public void onLoggedIn() {
         userDocRef = RecruitAccess.getRecruitDocumentReference(currentUser.getUid());
-        userDocRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()) {
-                    Recruit r = documentSnapshot.toObject(Recruit.class);
-                    r.setUid(documentSnapshot.getId());
-                    if (r.getVerified() != null) {
-                        if (r.getVerified()) {
-                            onVerified(r);
+        userDocRef.get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if (documentSnapshot.exists()) {
+                            Recruit r = documentSnapshot.toObject(Recruit.class);
+                            r.setUid(documentSnapshot.getId());
+                            if (r.getVerified() != null) {
+                                if (r.getVerified()) {
+                                    onVerified(r);
+                                } else {
+                                    onNotVerified();
+                                }
+                            }
                         } else {
-                            onNotVerified();
+                            RecruitAccess.add(currentUser);
+                            onLoggedIn();
                         }
                     }
-                } else {
-                    RecruitAccess.add(currentUser);
-                    onLoggedIn();
-                }
-            }
-        });
+                });
     }
 
     // Enable firestore offline access and update

@@ -7,9 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Filter;
-import android.widget.Filterable;
 import android.widget.TextView;
 
 import com.jvdm.recruits.Model.Recruit;
@@ -18,16 +16,14 @@ import com.jvdm.recruits.R;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by joske on 04/01/2018.
- */
-
 public class RecruitsAutoCompleteAdapter extends ArrayAdapter<Recruit> {
     private onRecruitsAutoCompleteAdapterInteractionListener listener;
     private List<Recruit> recruits;
     private List<Recruit> recruitsAll;
 
-    public RecruitsAutoCompleteAdapter(@NonNull Context context, List<Recruit> recruits, onRecruitsAutoCompleteAdapterInteractionListener listener) {
+    public RecruitsAutoCompleteAdapter(@NonNull Context context,
+                                       List<Recruit> recruits,
+                                       onRecruitsAutoCompleteAdapterInteractionListener listener) {
         super(context, R.layout.dialog_add_group_member_autocomplete_item, recruits);
         this.recruits = new ArrayList<>(recruits);
         this.recruitsAll = new ArrayList<>(recruits);
@@ -61,7 +57,10 @@ public class RecruitsAutoCompleteAdapter extends ArrayAdapter<Recruit> {
         if (convertView == null) {
             viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.dialog_add_group_member_autocomplete_item, parent, false);
+            convertView = inflater
+                    .inflate(R.layout.dialog_add_group_member_autocomplete_item,
+                            parent,
+                            false);
 
             viewHolder.textView = convertView.findViewById(R.id.tv_recruit_name);
 
@@ -96,7 +95,7 @@ public class RecruitsAutoCompleteAdapter extends ArrayAdapter<Recruit> {
                 FilterResults filterResults = new FilterResults();
                 List<Recruit> recruitSuggestions = new ArrayList<>();
                 if (charSequence != null) {
-                    for (Recruit r: recruitsAll) {
+                    for (Recruit r : recruitsAll) {
                         if (r.getUsername().toLowerCase()
                                 .contains(charSequence.toString().toLowerCase())) {
                             recruitSuggestions.add(r);
@@ -112,7 +111,7 @@ public class RecruitsAutoCompleteAdapter extends ArrayAdapter<Recruit> {
             protected void publishResults(CharSequence charSequence, FilterResults results) {
                 recruits.clear();
                 if (results != null && results.count > 0) {
-                    for (Object object: (List<?>) results.values) {
+                    for (Object object : (List<?>) results.values) {
                         if (object instanceof Recruit) {
                             recruits.add((Recruit) object);
                         }
@@ -125,11 +124,11 @@ public class RecruitsAutoCompleteAdapter extends ArrayAdapter<Recruit> {
         };
     }
 
-    private static class ViewHolder {
-        TextView textView;
-    }
-
     public interface onRecruitsAutoCompleteAdapterInteractionListener {
         void onRecruitSelected(Recruit r);
+    }
+
+    private static class ViewHolder {
+        TextView textView;
     }
 }

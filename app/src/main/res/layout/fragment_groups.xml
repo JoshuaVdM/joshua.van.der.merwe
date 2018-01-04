@@ -2,9 +2,9 @@
 
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:layout_height="match_parent">
 
     <ListView
         android:id="@+id/list_groups"
@@ -18,10 +18,10 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        app:srcCompat="@drawable/ic_add_white"
+        android:visibility="gone"
         app:layout_anchor="@id/list_groups"
         app:layout_anchorGravity="bottom|right|end"
-        android:visibility="gone"/>
+        app:srcCompat="@drawable/ic_add_white" />
 
 
 </android.support.design.widget.CoordinatorLayout>
