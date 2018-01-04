@@ -1,4 +1,4 @@
-package com.jvdm.recruits.Dialog;
+package com.jvdm.recruits.Dialogs;
 
 import android.content.Context;
 import android.support.v7.app.AlertDialog;

@@ -47,5 +47,4 @@
         app:layout_constraintEnd_toEndOf="@+id/actv_group_member_name"
         app:layout_constraintStart_toStartOf="@+id/actv_group_member_name"
         app:layout_constraintTop_toBottomOf="@+id/actv_group_member_name" />
-
 </android.support.constraint.ConstraintLayout>

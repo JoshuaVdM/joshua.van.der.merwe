@@ -1,6 +1,7 @@
 package com.jvdm.recruits.Activities;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,8 +11,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.jvdm.recruits.Adapters.GroupListAdapter;
+import com.jvdm.recruits.DataAccess.GroupAccess;
 import com.jvdm.recruits.Fragments.GroupDetailFragment;
+import com.jvdm.recruits.Model.Group;
 import com.jvdm.recruits.R;
 
 public class GroupDetailActivity extends AppCompatActivity implements
@@ -40,6 +47,15 @@ public class GroupDetailActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_group_detail);
 
         groupKey = getIntent().getStringExtra(GroupListAdapter.GROUP_KEY_INTENT);
+
+        GroupAccess.getGroupDocumentReference(groupKey)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        setTitle(documentSnapshot.getId());
+                    }
+                });
 
 //        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
