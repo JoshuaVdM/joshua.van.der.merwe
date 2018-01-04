@@ -1,4 +1,4 @@
-package com.jvdm.recruits.Dialog;
+package com.jvdm.recruits.Dialogs;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -7,8 +7,11 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -17,8 +20,12 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.jvdm.recruits.Adapters.RecruitsAutoCompleteAdapter;
+import com.jvdm.recruits.Adapters.RoleAdapter;
 import com.jvdm.recruits.DataAccess.RecruitAccess;
+import com.jvdm.recruits.Model.GroupMember;
+import com.jvdm.recruits.Model.InvitationState;
 import com.jvdm.recruits.Model.Recruit;
+import com.jvdm.recruits.Model.Role;
 import com.jvdm.recruits.R;
 
 import java.util.ArrayList;
@@ -29,14 +36,12 @@ import java.util.List;
  */
 
 public class AddGroupMemberDialog extends AlertDialog.Builder {
-    private static final String[] COUNTRIES = new String[]{
-            "Belgium", "France", "Italy", "Germany", "Spain"
-    };
     private onAddGroupMemberDialogListener listener;
     private List<Recruit> recruits;
     private RecruitsAutoCompleteAdapter adapter;
     private Recruit selectedRecruit;
     private AutoCompleteTextView textView;
+    private Role role;
 
     public AddGroupMemberDialog(Context context, onAddGroupMemberDialogListener listener) {
         super(context);
@@ -104,6 +109,21 @@ public class AddGroupMemberDialog extends AlertDialog.Builder {
             }
         });
 
+        final Spinner spinner = dialog.findViewById(R.id.spin_member_role);
+        ArrayAdapter spinnerAdapter = new RoleAdapter(getContext(), Role.values());
+        spinner.setAdapter(spinnerAdapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                role = (Role) parent.getItemAtPosition(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
         final Button btnAdd = dialog.findViewById(R.id.btn_add);
         final Button btnCancel = dialog.findViewById(R.id.btn_cancel);
 
@@ -116,7 +136,12 @@ public class AddGroupMemberDialog extends AlertDialog.Builder {
                             getContext().getString(R.string.recruit_selection_invalid),
                             Toast.LENGTH_SHORT).show();
                 } else {
-                    listener.onGroupMemberSelected(selectedRecruit.getUid());
+                    GroupMember gm = new GroupMember();
+                    gm.setRecruitReference(
+                            RecruitAccess.getRecruitDocumentReference(selectedRecruit.getUid()));
+                    gm.setRole(role);
+                    gm.setState(InvitationState.PENDING);
+                    listener.onGroupMemberSelected(gm);
                     dialog.cancel();
                 }
             }
@@ -131,6 +156,6 @@ public class AddGroupMemberDialog extends AlertDialog.Builder {
     }
 
     public interface onAddGroupMemberDialogListener {
-        void onGroupMemberSelected(String uid);
+        void onGroupMemberSelected(GroupMember gm);
     }
 }

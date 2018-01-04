@@ -56,6 +56,8 @@
     <string name="group_add_member_title">Add group member</string>
     <string name="group_add_member_already_member">This recruit is already in the group.</string>
     <string name="group_member_added">Recruit added to group</string>
+    <string name="group_member_role_leader">Leader</string>
+    <string name="group_member_role_member">Member</string>
 
     <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
     <string name="facebook_application_id" translatable="false">1627493943938849</string>

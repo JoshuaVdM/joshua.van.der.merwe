@@ -55,7 +55,7 @@ public class MemberListAdapter extends ArrayAdapter<GroupMember> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.role.setText(groupMember.getRole().toString().toLowerCase());
+        viewHolder.role.setText(groupMember.getRole().getLabel(getContext()));
 
         DocumentReference userRef = groupMember.getRecruitReference();
         userRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {

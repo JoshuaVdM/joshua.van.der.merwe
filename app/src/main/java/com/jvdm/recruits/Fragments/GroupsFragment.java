@@ -27,7 +27,7 @@ import com.jvdm.recruits.Adapters.GroupListAdapter;
 import com.jvdm.recruits.DataAccess.DataAccess;
 import com.jvdm.recruits.DataAccess.GroupAccess;
 import com.jvdm.recruits.DataAccess.RecruitAccess;
-import com.jvdm.recruits.Dialog.AddGroupDialog;
+import com.jvdm.recruits.Dialogs.AddGroupDialog;
 import com.jvdm.recruits.MainActivity;
 import com.jvdm.recruits.Model.Group;
 import com.jvdm.recruits.R;

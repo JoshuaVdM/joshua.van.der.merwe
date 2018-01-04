@@ -1,17 +1,25 @@
 package com.jvdm.recruits.Activities;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.jvdm.recruits.Adapters.GroupListAdapter;
+import com.jvdm.recruits.DataAccess.GroupAccess;
 import com.jvdm.recruits.Fragments.GroupDetailFragment;
+import com.jvdm.recruits.Model.Group;
 import com.jvdm.recruits.R;
 
 public class GroupDetailActivity extends AppCompatActivity implements
@@ -35,15 +43,35 @@ public class GroupDetailActivity extends AppCompatActivity implements
     private ViewPager mViewPager;
 
     @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
+
+    @Override
+    public boolean onNavigateUp() {
+        finish();
+        return true;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_group_detail);
 
         groupKey = getIntent().getStringExtra(GroupListAdapter.GROUP_KEY_INTENT);
 
-//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
+        GroupAccess.getGroupDocumentReference(groupKey)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        setTitle(documentSnapshot.getId());
+                    }
+                });
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());

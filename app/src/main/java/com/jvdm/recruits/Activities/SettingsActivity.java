@@ -37,6 +37,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         };
     }
 
+    @Override
+    public boolean onNavigateUp() {
+        finish();
+        return true;
+    }
+
     private static void bindPreferenceSummaryToValue(Preference preference) {
         preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
 

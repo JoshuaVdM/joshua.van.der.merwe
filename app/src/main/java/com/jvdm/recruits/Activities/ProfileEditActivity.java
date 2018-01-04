@@ -44,6 +44,18 @@ public class ProfileEditActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
+    @Override
+    public boolean onSupportNavigateUp() {
+        finish();
+        return true;
+    }
+
+    @Override
+    public boolean onNavigateUp() {
+        finish();
+        return true;
+    }
+
     private void setViewValues(Recruit r) {
         recruitName.setText(r.getUsername());
         recruitEmail.setText(r.getEmail());
