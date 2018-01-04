@@ -1,5 +1,6 @@
 package com.jvdm.recruits.Model;
 
+import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.IgnoreExtraProperties;
 
 /**
@@ -8,6 +9,8 @@ import com.google.firebase.firestore.IgnoreExtraProperties;
 
 @IgnoreExtraProperties
 public class Recruit {
+    @Exclude
+    private String uid;
     private String username;
     private String email;
     private String description;
@@ -16,10 +19,20 @@ public class Recruit {
     private String photoUri;
 
     // Constructors
+
     public Recruit() {
     }
 
     // Getters and setters
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
     public String getUsername() {
         return username;
     }

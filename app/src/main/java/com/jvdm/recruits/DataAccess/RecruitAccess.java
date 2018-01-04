@@ -28,8 +28,16 @@ public class RecruitAccess extends DataAccess {
         return getRecruitDocumentReference(uid).collection("groups");
     }
 
+    public static CollectionReference getRecruitGroupsCollectionReference(DocumentReference recruitReference) {
+        return recruitReference.collection("groups");
+    }
+
     public static DocumentReference getRecruitGroupDocumentReference(String userUid, String groupUid) {
         return getRecruitGroupsCollectionReference(userUid).document(groupUid);
+    }
+
+    public static DocumentReference getRecruitGroupDocumentReference(DocumentReference recruitReference, String groupUid) {
+        return getRecruitGroupsCollectionReference(recruitReference).document(groupUid);
     }
 
     public static void add(FirebaseUser currentUser) {

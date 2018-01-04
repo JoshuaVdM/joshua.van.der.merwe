@@ -36,6 +36,10 @@
     <string name="profile_verifications_title">Verifications</string>
     <string name="admin_title">Admin</string>
 
+    <!-- Strings related to recruits -->
+    <string name="recruit_name">Recruit name</string>
+    <string name="recruit_selection_invalid">Please select a recruit</string>
+
     <!-- Strings related to groups -->
     <string name="groups_user_groups">My groups</string>
     <string name="groups_all_groups">All groups</string>
@@ -48,6 +52,9 @@
     <string name="group_members">Members</string>
     <string name="group_add_title">Add group</string>
     <string name="group_city">City</string>
+    <string name="group_add_member_title">Add group member</string>
+    <string name="group_add_member_already_member">This recruit is already in the group.</string>
+    <string name="group_member_added">Recruit added to group</string>
 
     <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
     <string name="facebook_application_id" translatable="false">1627493943938849</string>

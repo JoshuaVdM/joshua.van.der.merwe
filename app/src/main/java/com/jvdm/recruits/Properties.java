@@ -58,6 +58,7 @@ public class Properties {
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (documentSnapshot.exists()) {
                     currentRecruit = documentSnapshot.toObject(Recruit.class);
+                    currentRecruit.setUid(documentSnapshot.getId());
                 }
             }
         });

@@ -6,6 +6,6 @@ package com.jvdm.recruits.Model;
 
 public enum InvitationState {
     PENDING,
-    ACCEPTIED,
+    ACCEPTED,
     DECLINED
 }

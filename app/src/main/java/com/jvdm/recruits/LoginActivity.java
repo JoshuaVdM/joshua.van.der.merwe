@@ -18,10 +18,13 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.jvdm.recruits.DataAccess.GroupAccess;
 import com.jvdm.recruits.DataAccess.RecruitAccess;
-import com.jvdm.recruits.Model.Group;
+import com.jvdm.recruits.Model.GroupMember;
+import com.jvdm.recruits.Model.InvitationState;
 import com.jvdm.recruits.Model.Recruit;
+import com.jvdm.recruits.Model.Role;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
@@ -76,21 +79,26 @@ public class LoginActivity extends AppCompatActivity {
         currentUser = auth.getCurrentUser();
     }
 
-    public void onVerified(String key, Recruit r) {
+    public void onVerified(Recruit r) {
         Properties properties = Properties.getInstance();
         properties.setCurrentRecruit(r);
-        properties.listenForRecruit(RecruitAccess.getRecruitDocumentReference(key));
+        properties.listenForRecruit(RecruitAccess.getRecruitDocumentReference(r.getUid()));
 
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 
     public void updateGroup() {
-        Group g = new Group();
-        g.setCity("Brussel");
-        g.setKey("Recruits Brussel Alpha");
+        HashMap<String, GroupMember> map = new HashMap<>();
+        GroupMember ben = new GroupMember();
 
-        GroupAccess.add(g);
+        String key = "PpOwLWMmYMZHVHAur3dUOHVo0ow1";
+
+        ben.setRole(Role.MEMBER);
+        ben.setState(InvitationState.ACCEPTED);
+        ben.setRecruitReference(RecruitAccess.getRecruitDocumentReference(key));
+        map.put(key, ben);
+        GroupAccess.updateOrAddGroupMembers("Recruits Brussel Alpha", map);
     }
 
     public void onNotVerified() {
@@ -126,9 +134,10 @@ public class LoginActivity extends AppCompatActivity {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if (documentSnapshot.exists()) {
                     Recruit r = documentSnapshot.toObject(Recruit.class);
+                    r.setUid(documentSnapshot.getId());
                     if (r.getVerified() != null) {
                         if (r.getVerified()) {
-                            onVerified(documentSnapshot.getId(), r);
+                            onVerified(r);
                         } else {
                             onNotVerified();
                         }

@@ -15,7 +15,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.jvdm.recruits.DataAccess.RecruitAccess;
 import com.jvdm.recruits.Helpers.CircleTransform;
 import com.jvdm.recruits.Model.GroupMember;
 import com.jvdm.recruits.Model.Recruit;
