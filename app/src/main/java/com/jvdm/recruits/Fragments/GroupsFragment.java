@@ -181,6 +181,7 @@ public class GroupsFragment extends Fragment {
                                 if (g.getMember().getState() == InvitationState.ACCEPTED) {
                                     values.add(g.getGroup());
                                 }
+                                adapter.notifyDataSetChanged();
                                 break;
                             case REMOVED:
                                 values.remove(g.getGroup());
