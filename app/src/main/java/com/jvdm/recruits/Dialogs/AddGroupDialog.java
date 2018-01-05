@@ -42,7 +42,7 @@ public class AddGroupDialog extends AlertDialog.Builder {
                 Group g = new Group();
                 g.setKey(name);
                 g.setCity(city);
-                listener.onGroupAdded(g);
+                listener.onGroupChosen(g);
                 dialog.cancel();
             }
         });
@@ -57,6 +57,6 @@ public class AddGroupDialog extends AlertDialog.Builder {
     }
 
     public interface onAddGroupDialogListener {
-        void onGroupAdded(Group g);
+        void onGroupChosen(Group g);
     }
 }

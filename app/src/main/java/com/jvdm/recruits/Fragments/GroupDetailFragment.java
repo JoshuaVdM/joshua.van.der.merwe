@@ -28,7 +28,6 @@ import com.jvdm.recruits.DataAccess.RecruitAccess;
 import com.jvdm.recruits.Dialogs.AddGroupMemberDialog;
 import com.jvdm.recruits.Model.Group;
 import com.jvdm.recruits.Model.GroupMember;
-import com.jvdm.recruits.Model.InvitationState;
 import com.jvdm.recruits.Model.Recruit;
 import com.jvdm.recruits.Model.Role;
 import com.jvdm.recruits.Properties;
@@ -223,6 +222,5 @@ public class GroupDetailFragment extends Fragment {
 
     public interface onGroupDetailFragmentInteractionListener {
         String getGroupKey();
-
     }
 }

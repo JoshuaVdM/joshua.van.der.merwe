@@ -20,11 +20,12 @@ public class Recruit {
     }
 
     // Getters and setters
-
+    @Exclude
     public String getUid() {
         return uid;
     }
 
+    @Exclude
     public void setUid(String uid) {
         this.uid = uid;
     }

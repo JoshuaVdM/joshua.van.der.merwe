@@ -41,6 +41,8 @@ import com.squareup.picasso.Picasso;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private static final String MAINACTIVITY_RECRUIT_CHANGE = "RECRUIT_STATUS_CHANGED";
+
     public FirebaseAuth auth;
     public FirebaseUser currentUser;
     public FirebaseFirestore firestore;
@@ -50,15 +52,13 @@ public class MainActivity extends AppCompatActivity
     private TextView recruitName;
     private TextView recruitEmail;
     private ImageView profilePicture;
+    private Properties.onPropertiesInteractionListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         context = this;
-
-        Recruit r = Properties.getInstance()
-                .getCurrentRecruit();
 
         // Initialise auth
         auth = FirebaseAuth.getInstance();
@@ -69,7 +69,6 @@ public class MainActivity extends AppCompatActivity
 
         // Initialise database
         firestore = FirebaseFirestore.getInstance();
-
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -87,6 +86,25 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        // Initialize listener
+        listener = new Properties.onPropertiesInteractionListener() {
+            @Override
+            public void onRecruitRemoved() {
+
+            }
+
+            @Override
+            public void onRecruitUnverified() {
+
+            }
+
+            @Override
+            public void onRecruitPermissionsChanged() {
+                initNavMenu();
+                displaySelectedFragment(R.id.nav_groups);
+            }
+        };
+
         // Initialize drawer navigation
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -100,15 +118,6 @@ public class MainActivity extends AppCompatActivity
                 .findViewById(R.id.text_recruit_email);
         profilePicture = navigationView.getHeaderView(0)
                 .findViewById(R.id.image_profile);
-
-
-        navigationView.getMenu()
-                .clear();
-        if (Properties.getInstance().getCurrentRecruit().getPermissions().isAdmin()) {
-            navigationView.inflateMenu(R.menu.activity_main_drawer_admin);
-        } else {
-            navigationView.inflateMenu(R.menu.activity_main_drawer);
-        }
 
         DocumentReference userDocRef = RecruitAccess.getRecruitDocumentReference(
                 currentUser.getUid());
@@ -126,6 +135,18 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Properties.getInstance().addRecruitListener(MAINACTIVITY_RECRUIT_CHANGE, listener);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Properties.getInstance().removeRecruitListener(MAINACTIVITY_RECRUIT_CHANGE);
     }
 
     @Override
@@ -213,6 +234,16 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
     }
 
+    private void initNavMenu() {
+        navigationView.getMenu()
+                .clear();
+        if (Properties.getInstance().getCurrentRecruit().getPermissions().isAdmin()) {
+            navigationView.inflateMenu(R.menu.activity_main_drawer_admin);
+        } else {
+            navigationView.inflateMenu(R.menu.activity_main_drawer);
+        }
+    }
+
     public void onSignOut() {
         AuthUI.getInstance()
                 .signOut(this)
@@ -228,5 +259,4 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(intent);
     }
-
 }

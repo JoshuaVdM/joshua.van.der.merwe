@@ -42,56 +42,8 @@ public class GroupAccess extends DataAccess {
         return getGroupMembersCollectionReference(groupUid).document(recruitUid);
     }
 
-    public static void add(final Group group) {
-        add(group, new HashMap<String, GroupMember>());
-    }
-
-    public static void add(final Group group, final HashMap<String, GroupMember> members) {
-        // Get reference to group
+    public static void updateGroup(final Group group) {
         final DocumentReference groupDocRef = getGroupDocumentReference(group.getKey());
-
-        // Run transaction
-        getDatabase().runTransaction(new Transaction.Function<Void>() {
-            @Nullable
-            @Override
-            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
-                // Get the group at the referenced location
-                DocumentSnapshot snapshot = transaction.get(groupDocRef);
-
-                if (snapshot.exists()) {
-                    // Group already exists
-                    Log.d(TAG, "Group already exists");
-                } else {
-                    // Group doesn't exist yet, set group at referenced location
-                    transaction.set(groupDocRef, group);
-
-                    // Iterate over members
-                    for (Map.Entry<String, GroupMember> member : members.entrySet()) {
-                        // Set group member
-                        transaction.set(getGroupMemberDocumentReference(
-                                group.getKey(),
-                                member.getKey()),
-                                member.getValue()
-                        );
-
-                        // Make recruitgroup object, to be put in recruit groups collection
-                        HashMap<String, DocumentReference> recruitGroup = new HashMap<>();
-                        recruitGroup.put("group", groupDocRef);
-
-                        transaction.set(RecruitAccess.getRecruitGroupDocumentReference(
-                                member.getKey(),
-                                group.getKey()),
-                                recruitGroup
-                        );
-                    }
-                }
-                return null;
-            }
-        });
-    }
-
-    public static void updateGroup(final String name, final Group group) {
-        final DocumentReference groupDocRef = getGroupDocumentReference(name);
 
         getDatabase().runTransaction(new Transaction.Function<Void>() {
             @Nullable
@@ -134,7 +86,7 @@ public class GroupAccess extends DataAccess {
                                 RecruitAccess.getRecruitGroupDocumentReference(
                                         member.getKey(),
                                         name),
-                                recruitGroup);
+                                snapshot.toObject(Group.class));
                     }
                 }
                 return null;

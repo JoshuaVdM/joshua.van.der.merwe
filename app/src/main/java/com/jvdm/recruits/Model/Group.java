@@ -1,8 +1,9 @@
 package com.jvdm.recruits.Model;
 
 import com.google.firebase.firestore.Exclude;
+import com.google.firebase.firestore.IgnoreExtraProperties;
 
-
+@IgnoreExtraProperties
 public class Group {
     @Exclude
     private String key;
@@ -14,11 +15,12 @@ public class Group {
     }
 
     // Getters and setters
-
+    @Exclude
     public String getKey() {
         return key;
     }
 
+    @Exclude
     public void setKey(String key) {
         this.key = key;
     }

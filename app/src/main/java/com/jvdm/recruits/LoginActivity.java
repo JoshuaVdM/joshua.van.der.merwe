@@ -6,16 +6,18 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.jvdm.recruits.DataAccess.GroupAccess;
 import com.jvdm.recruits.DataAccess.RecruitAccess;
 import com.jvdm.recruits.Model.GroupMember;
@@ -37,6 +39,8 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
     private DocumentReference userDocRef;
+
+    private AlertDialog notVerifiedDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,31 +132,38 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
 
-        builder.create().show();
+        notVerifiedDialog = builder.create();
+        notVerifiedDialog.show();
     }
 
     public void onLoggedIn() {
         userDocRef = RecruitAccess.getRecruitDocumentReference(currentUser.getUid());
-        userDocRef.get()
-                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        if (documentSnapshot.exists()) {
-                            Recruit r = documentSnapshot.toObject(Recruit.class);
-                            r.setUid(documentSnapshot.getId());
-                            if (r.getVerified() != null) {
-                                if (r.getVerified()) {
-                                    onVerified(r);
-                                } else {
-                                    onNotVerified();
-                                }
+        userDocRef.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (documentSnapshot.exists()) {
+                    Recruit r = documentSnapshot.toObject(Recruit.class);
+                    r.setUid(documentSnapshot.getId());
+                    if (r.getVerified() != null) {
+                        if (r.getVerified()) {
+                            if (notVerifiedDialog != null) {
+                                notVerifiedDialog.cancel();
+                                Toast.makeText(
+                                        LoginActivity.this,
+                                        "Your account has been verified",
+                                        Toast.LENGTH_SHORT).show();
                             }
+                            onVerified(r);
                         } else {
-                            RecruitAccess.add(currentUser);
-                            onLoggedIn();
+                            onNotVerified();
                         }
                     }
-                });
+                } else {
+                    RecruitAccess.add(currentUser);
+                    onLoggedIn();
+                }
+            }
+        });
     }
 
     // Enable firestore offline access and update

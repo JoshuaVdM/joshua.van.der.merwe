@@ -88,7 +88,7 @@ public class GroupsFragment extends Fragment {
                 public void onClick(View view) {
                     new AddGroupDialog(getContext(), new AddGroupDialog.onAddGroupDialogListener() {
                         @Override
-                        public void onGroupAdded(final Group g) {
+                        public void onGroupChosen(final Group g) {
                             final DocumentReference groupRef;
                             groupRef = GroupAccess.getGroupDocumentReference(g.getKey());
                             DataAccess.getDatabase()
