@@ -97,7 +97,6 @@ public class Properties {
     }
 
     public void addRecruitListener(String tag, onPropertiesInteractionListener listener) {
-        listener.onRecruitPermissionsChanged();
         listeners.put(tag, listener);
     }
 

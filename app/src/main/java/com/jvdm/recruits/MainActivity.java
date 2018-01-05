@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private static final String MAINACTIVITY_RECRUIT_CHANGE = "RECRUIT_STATUS_CHANGED";
+    private static final String CURRENT_FRAGMENT_TAG = "CURRENT_FRAGMENT_TAG";
 
     public FirebaseAuth auth;
     public FirebaseUser currentUser;
@@ -101,7 +102,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onRecruitPermissionsChanged() {
                 initNavMenu();
-                displaySelectedFragment(R.id.nav_groups);
+                displayDefaultFragmentIfCurrentFragmentIsAdminOnly();
             }
         };
 
@@ -140,6 +141,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        displayDefaultFragmentIfCurrentFragmentIsAdminOnly();
+        initNavMenu();
         Properties.getInstance().addRecruitListener(MAINACTIVITY_RECRUIT_CHANGE, listener);
     }
 
@@ -198,12 +201,11 @@ public class MainActivity extends AppCompatActivity
 
     public void displaySelectedFragment(int id) {
         Fragment fragment = null;
-        Bundle args = null;
+        Bundle args;
         switch (id) {
             case R.id.nav_groups:
                 args = new Bundle();
                 args.putBoolean("admin", false);
-
                 fragment = new GroupsFragment();
                 fragment.setArguments(args);
                 break;
@@ -219,7 +221,6 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_groups_all:
                 args = new Bundle();
                 args.putBoolean("admin", true);
-
                 fragment = new GroupsFragment();
                 fragment.setArguments(args);
                 break;
@@ -227,11 +228,30 @@ public class MainActivity extends AppCompatActivity
         if (fragment != null) {
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction()
-                    .replace(R.id.layout_main, fragment)
+                    .replace(R.id.layout_main, fragment, CURRENT_FRAGMENT_TAG)
                     .commit();
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+    }
+
+    private void displayDefaultFragmentIfCurrentFragmentIsAdminOnly() {
+        if (checkIfFragmentIsAdminOnly()
+                && !Properties.getInstance().getCurrentRecruit().getPermissions().isAdmin()) {
+            displaySelectedFragment(R.id.nav_groups);
+        }
+    }
+
+    public Boolean checkIfFragmentIsAdminOnly() {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(CURRENT_FRAGMENT_TAG);
+        if (fragment != null) {
+            if (fragment instanceof RecruitVerificationFragment) {
+                return true;
+            } else if (fragment instanceof GroupsFragment) {
+                return fragment.getArguments().getBoolean("admin");
+            }
+        }
+        return false;
     }
 
     private void initNavMenu() {
