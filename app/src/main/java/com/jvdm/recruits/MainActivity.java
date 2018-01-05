@@ -32,6 +32,7 @@ import com.jvdm.recruits.Activities.ProfileEditActivity;
 import com.jvdm.recruits.Activities.SettingsActivity;
 import com.jvdm.recruits.DataAccess.RecruitAccess;
 import com.jvdm.recruits.Fragments.GroupsFragment;
+import com.jvdm.recruits.Fragments.InvitationsFragment;
 import com.jvdm.recruits.Fragments.ProfileFragment;
 import com.jvdm.recruits.Fragments.RecruitVerificationFragment;
 import com.jvdm.recruits.Helpers.CircleTransform;
@@ -211,6 +212,9 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_profile:
                 fragment = new ProfileFragment();
+                break;
+            case R.id.nav_invitations:
+                fragment = new InvitationsFragment();
                 break;
             case R.id.nav_sign_out:
                 onSignOut();

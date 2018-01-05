@@ -124,8 +124,7 @@ public class GroupDetailFragment extends Fragment {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (documentSnapshot.exists()) {
-                    GroupMember gm = documentSnapshot.toObject(GroupMember.class);
-                    currentMember = gm;
+                    currentMember = documentSnapshot.toObject(GroupMember.class);
                 }
                 initFab(rootView);
             }
@@ -188,21 +187,6 @@ public class GroupDetailFragment extends Fragment {
         return rootView;
     }
 
-
-    public void initFab(View rootView) {
-        if ((currentMember != null && currentMember.getRole() == Role.LEADER) ||
-                Properties.getInstance().getCurrentRecruit().getPermissions().isAdmin()) {
-            fab = rootView.findViewById(R.id.fab_add_member);
-            fab.setVisibility(View.VISIBLE);
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    new AddGroupMemberDialog(getContext(), onAddGroupMemberDialogListener);
-                }
-            });
-        }
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -218,6 +202,20 @@ public class GroupDetailFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         listener = null;
+    }
+
+    public void initFab(View rootView) {
+        if ((currentMember != null && currentMember.getRole() == Role.LEADER) ||
+                Properties.getInstance().getCurrentRecruit().getPermissions().isAdmin()) {
+            fab = rootView.findViewById(R.id.fab_add_member);
+            fab.setVisibility(View.VISIBLE);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    new AddGroupMemberDialog(getContext(), onAddGroupMemberDialogListener);
+                }
+            });
+        }
     }
 
     public interface onGroupDetailFragmentInteractionListener {

@@ -1,5 +1,6 @@
 package com.jvdm.recruits.DataAccess;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -13,6 +14,8 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Transaction;
 import com.jvdm.recruits.Model.Group;
 import com.jvdm.recruits.Model.GroupMember;
+import com.jvdm.recruits.Model.InvitationState;
+import com.jvdm.recruits.Model.RecruitGroup;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,6 +61,15 @@ public class GroupAccess extends DataAccess {
         });
     }
 
+    public static void updateGroupMemberInvitationState(Context context, String groupName, String uid, InvitationState state) {
+        getGroupMemberDocumentReference(groupName, uid).update(
+                "state", state.getEnumValue()
+        );
+        RecruitAccess.getRecruitGroupDocumentReference(uid, groupName).update(
+                "member.state", state.getEnumValue()
+        );
+    }
+
     public static void updateOrAddGroupMembers(
             final String name,
             final HashMap<String, GroupMember> members) {
@@ -79,14 +91,18 @@ public class GroupAccess extends DataAccess {
                                 member.getValue()
                         );
 
-                        HashMap<String, DocumentReference> recruitGroup = new HashMap<>();
-                        recruitGroup.put("group", groupDocRef);
+                        /*HashMap<String, DocumentReference> recruitGroup = new HashMap<>();
+                        recruitGroup.put("group", groupDocRef);*/
+
+                        RecruitGroup recruitGroup = new RecruitGroup();
+                        recruitGroup.setGroup(snapshot.toObject(Group.class));
+                        recruitGroup.setMember(member.getValue());
 
                         transaction.set(
                                 RecruitAccess.getRecruitGroupDocumentReference(
                                         member.getKey(),
                                         name),
-                                snapshot.toObject(Group.class));
+                                recruitGroup);
                     }
                 }
                 return null;

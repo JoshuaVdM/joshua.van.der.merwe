@@ -10,7 +10,10 @@
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_person_black"
             android:title="@string/profile_title" />
-
+        <item
+            android:id="@+id/nav_invitations"
+            android:icon="@drawable/ic_plus_one_black"
+            android:title="@string/recruit_invitations" />
 
     </group>
 

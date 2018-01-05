@@ -29,14 +29,13 @@ import com.jvdm.recruits.Adapters.GroupListAdapter;
 import com.jvdm.recruits.DataAccess.DataAccess;
 import com.jvdm.recruits.DataAccess.GroupAccess;
 import com.jvdm.recruits.DataAccess.RecruitAccess;
+import com.jvdm.recruits.Dialogs.AcceptInvitationDialog;
 import com.jvdm.recruits.Dialogs.AddGroupDialog;
-import com.jvdm.recruits.MainActivity;
 import com.jvdm.recruits.Model.Group;
 import com.jvdm.recruits.Model.InvitationState;
 import com.jvdm.recruits.Model.RecruitGroup;
+import com.jvdm.recruits.Properties;
 import com.jvdm.recruits.R;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +44,7 @@ import java.util.List;
  * Created by Joske on 29/12/17.
  */
 
-public class GroupsFragment extends Fragment {
+public class InvitationsFragment extends Fragment {
     private ListView listView;
     private List<Group> values;
     private GroupListAdapter adapter;
@@ -55,10 +54,42 @@ public class GroupsFragment extends Fragment {
     private View.OnClickListener onListItemClickedListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            String name = ((TextView) v.findViewById(R.id.txt_group_name)).getText().toString();
-            Intent intent = new Intent(getContext(), GroupDetailActivity.class);
-            intent.putExtra(GroupListAdapter.GROUP_KEY_INTENT, name);
-            getContext().startActivity(intent);
+            final String name = ((TextView) v.findViewById(R.id.txt_group_name)).getText().toString();
+            new AcceptInvitationDialog(
+                    getContext(),
+                    name,
+                    new AcceptInvitationDialog.onAcceptInvitationDialogInteractionListener() {
+                        @Override
+                        public void onInvitationAccepted() {
+                            GroupAccess.updateGroupMemberInvitationState(
+                                    getContext(),
+                                    name,
+                                    Properties.getInstance().getCurrentRecruit().getUid(),
+                                    InvitationState.ACCEPTED
+                            );
+                            Toast.makeText(
+                                    getContext(),
+                                    R.string.group_member_invitation_accepted,
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                        }
+
+                        @Override
+                        public void onInvitationDeclined() {
+                            GroupAccess.updateGroupMemberInvitationState(
+                                    getContext(),
+                                    name,
+                                    Properties.getInstance().getCurrentRecruit().getUid(),
+                                    InvitationState.DECLINED
+                            );
+                            Toast.makeText(
+                                    getContext(),
+                                    R.string.group_member_invitation_declined,
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                        }
+                    }
+            );
         }
     };
 
@@ -153,71 +184,43 @@ public class GroupsFragment extends Fragment {
 
     private void setGroupsListener() {
         CollectionReference groupsRef;
-        if (!admin) {
-            groupsRef = RecruitAccess.
-                    getRecruitGroupsCollectionReference(
-                            FirebaseAuth.getInstance().getCurrentUser().getUid()
-                    );
-            groupsRef.addSnapshotListener(getActivity(), new EventListener<QuerySnapshot>() {
-                @Override
-                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                    if (e != null) {
-                        return;
-                    }
+        groupsRef = RecruitAccess.
+                getRecruitGroupsCollectionReference(
+                        FirebaseAuth.getInstance().getCurrentUser().getUid()
+                );
+        groupsRef.addSnapshotListener(getActivity(), new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                if (e != null) {
+                    return;
+                }
 
-                    for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
-                        RecruitGroup g = dc.getDocument().toObject(RecruitGroup.class);
-                        g.getGroup().setKey(dc.getDocument().getId());
+                for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
+                    RecruitGroup g = dc.getDocument().toObject(RecruitGroup.class);
+                    g.getGroup().setKey(dc.getDocument().getId());
 
-                        switch (dc.getType()) {
-                            case ADDED:
-                                if (g.getMember().getState() == InvitationState.ACCEPTED) {
-                                    values.add(g.getGroup());
-                                    adapter.notifyDataSetChanged();
-                                }
-                                break;
-                            case MODIFIED:
-                                values.remove(g.getGroup());
-                                if (g.getMember().getState() == InvitationState.ACCEPTED) {
-                                    values.add(g.getGroup());
-                                }
-                                break;
-                            case REMOVED:
-                                values.remove(g.getGroup());
+                    switch (dc.getType()) {
+                        case ADDED:
+                            if (g.getMember().getState() == InvitationState.PENDING) {
+                                values.add(g.getGroup());
                                 adapter.notifyDataSetChanged();
-                                break;
-                        }
+                            }
+                            break;
+                        case MODIFIED:
+                            values.remove(g.getGroup());
+                            if (g.getMember().getState() == InvitationState.PENDING) {
+                                values.add(g.getGroup());
+                            }
+                            adapter.notifyDataSetChanged();
+                            break;
+                        case REMOVED:
+                            values.remove(g.getGroup());
+                            adapter.notifyDataSetChanged();
+                            break;
                     }
                 }
-            });
-        } else {
-            groupsRef = GroupAccess.getGroupsCollectionReference();
-            groupsRef.addSnapshotListener(getActivity(), new EventListener<QuerySnapshot>() {
-                @Override
-                public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
-                    if (e != null) {
-                        return;
-                    }
-
-                    for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
-                        Group g = dc.getDocument().toObject(Group.class);
-                        g.setKey(dc.getDocument().getId());
-                        switch (dc.getType()) {
-                            case ADDED:
-                                values.add(g);
-                                adapter.notifyDataSetChanged();
-                                break;
-                            case MODIFIED:
-                                break;
-                            case REMOVED:
-                                values.remove(g);
-                                adapter.notifyDataSetChanged();
-                                break;
-                        }
-                    }
-                }
-            });
-        }
+            }
+        });
     }
 
     @Override

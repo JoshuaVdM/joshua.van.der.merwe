@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">Recruits</string>
     <string name="action_add">Add</string>
+    <string name="action_accept">Accept</string>
     <string name="action_cancel">Cancel</string>
+    <string name="action_decline">Decline</string>
 
     <!-- Strings related to login/out -->
     <string name="prompt_email">Email</string>
@@ -29,8 +31,6 @@
     <string name="profile_description">About me</string>
     <string name="profile_description_edit">Tell us about yourself</string>
     <string name="profile_action_save">Save</string>
-    <string name="profile_accept_verification">Accept</string>
-    <string name="profile_decline_verification">Decline</string>
 
     <!-- Admin strings -->
     <string name="profile_verifications">Recruit account verifications</string>
@@ -40,6 +40,7 @@
     <!-- Strings related to recruits -->
     <string name="recruit_name">Recruit name</string>
     <string name="recruit_selection_invalid">Please select a recruit</string>
+    <string name="recruit_invitations">Invitations</string>
 
     <!-- Strings related to groups -->
     <string name="groups_user_groups">My groups</string>
@@ -58,6 +59,11 @@
     <string name="group_member_added">Recruit added to group</string>
     <string name="group_member_role_leader">Leader</string>
     <string name="group_member_role_member">Member</string>
+    <string name="group_member_invitation_pending">Pending</string>
+    <string name="group_member_invitation_accepted">Invitation accepted</string>
+    <string name="group_member_invitation_declined">Invitation declined</string>
+    <string name="group_member_invitation_title">Group invitation</string>
+    <string name="group_member_invitation_message">You have been invited to join</string>
 
     <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
     <string name="facebook_application_id" translatable="false">1627493943938849</string>
