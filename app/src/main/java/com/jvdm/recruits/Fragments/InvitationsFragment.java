@@ -62,7 +62,6 @@ public class InvitationsFragment extends Fragment {
                         @Override
                         public void onInvitationAccepted() {
                             GroupAccess.updateGroupMemberInvitationState(
-                                    getContext(),
                                     name,
                                     Properties.getInstance().getCurrentRecruit().getUid(),
                                     InvitationState.ACCEPTED
@@ -77,7 +76,6 @@ public class InvitationsFragment extends Fragment {
                         @Override
                         public void onInvitationDeclined() {
                             GroupAccess.updateGroupMemberInvitationState(
-                                    getContext(),
                                     name,
                                     Properties.getInstance().getCurrentRecruit().getUid(),
                                     InvitationState.DECLINED
@@ -226,6 +224,6 @@ public class InvitationsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getActivity().setTitle(admin ? "All groups" : "My groups");
+        getActivity().setTitle("Group invitations");
     }
 }

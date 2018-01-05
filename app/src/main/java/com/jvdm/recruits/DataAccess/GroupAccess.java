@@ -61,7 +61,7 @@ public class GroupAccess extends DataAccess {
         });
     }
 
-    public static void updateGroupMemberInvitationState(Context context, String groupName, String uid, InvitationState state) {
+    public static void updateGroupMemberInvitationState(String groupName, String uid, InvitationState state) {
         getGroupMemberDocumentReference(groupName, uid).update(
                 "state", state.getEnumValue()
         );

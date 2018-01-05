@@ -17,12 +17,15 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.jvdm.recruits.Adapters.GroupListAdapter;
 import com.jvdm.recruits.DataAccess.GroupAccess;
 import com.jvdm.recruits.Fragments.GroupDetailFragment;
+import com.jvdm.recruits.Model.GroupMember;
+import com.jvdm.recruits.Properties;
 import com.jvdm.recruits.R;
 
 public class GroupDetailActivity extends AppCompatActivity implements
         GroupDetailFragment.onGroupDetailFragmentInteractionListener {
 
     String groupKey;
+    GroupMember currentGroupMember;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -74,6 +77,33 @@ public class GroupDetailActivity extends AppCompatActivity implements
                     }
                 });
 
+        GroupAccess.getGroupMemberDocumentReference(
+                groupKey,
+                Properties.getInstance()
+                        .getCurrentRecruit()
+                        .getUid()
+        ).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (documentSnapshot.exists()) {
+                    GroupMember gm = documentSnapshot.toObject(GroupMember.class);
+                    switch (gm.getState()) {
+                        case ACCEPTED:
+                            currentGroupMember = gm;
+                            break;
+                        case PENDING:
+                            onNavigateUp();
+                            break;
+                        case DECLINED:
+                            onNavigateUp();
+                            break;
+                    }
+                } else {
+                    onNavigateUp();
+                }
+            }
+        });
+
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Create the adapter that will return a fragment for each of the three
@@ -117,6 +147,11 @@ public class GroupDetailActivity extends AppCompatActivity implements
     @Override
     public String getGroupKey() {
         return groupKey;
+    }
+
+    @Override
+    public GroupMember getCurrentGroupMember() {
+        return currentGroupMember;
     }
 
     /**

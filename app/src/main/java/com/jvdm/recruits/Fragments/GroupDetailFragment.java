@@ -24,10 +24,10 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.jvdm.recruits.Adapters.MemberListAdapter;
 import com.jvdm.recruits.DataAccess.GroupAccess;
-import com.jvdm.recruits.DataAccess.RecruitAccess;
 import com.jvdm.recruits.Dialogs.AddGroupMemberDialog;
 import com.jvdm.recruits.Model.Group;
 import com.jvdm.recruits.Model.GroupMember;
+import com.jvdm.recruits.Model.InvitationState;
 import com.jvdm.recruits.Model.Recruit;
 import com.jvdm.recruits.Model.Role;
 import com.jvdm.recruits.Properties;
@@ -58,9 +58,9 @@ public class GroupDetailFragment extends Fragment {
     private AddGroupMemberDialog.onAddGroupMemberDialogListener onAddGroupMemberDialogListener = new AddGroupMemberDialog.onAddGroupMemberDialogListener() {
         @Override
         public void onGroupMemberSelected(final GroupMember gm) {
-            final DocumentReference recruitGroupRef = RecruitAccess.getRecruitGroupDocumentReference(
-                    gm.getRecruitReference(),
-                    groupUid);
+            final DocumentReference recruitGroupRef = GroupAccess.getGroupMemberDocumentReference(
+                    groupUid,
+                    gm.getRecruitReference().getId());
             recruitGroupRef.get().addOnCompleteListener(
                     new OnCompleteListener<DocumentSnapshot>() {
                         @Override
@@ -69,9 +69,38 @@ public class GroupDetailFragment extends Fragment {
                             if (task.isSuccessful()) {
                                 DocumentSnapshot snapshot =
                                         task.getResult();
-                                if (!snapshot.exists()) {
+                                if (snapshot.exists()) {
+                                    GroupMember tmpMember = snapshot.toObject(GroupMember.class);
+                                    switch (tmpMember.getState()) {
+                                        case ACCEPTED:
+                                            Toast.makeText(
+                                                    getContext(),
+                                                    R.string.group_add_member_already_member,
+                                                    Toast.LENGTH_SHORT
+                                            ).show();
+                                            break;
+                                        case PENDING:
+                                            Toast.makeText(
+                                                    getContext(),
+                                                    R.string.group_member_already_invited,
+                                                    Toast.LENGTH_SHORT
+                                            ).show();
+                                            break;
+                                        case DECLINED:
+                                            GroupAccess.updateGroupMemberInvitationState(
+                                                    groupUid,
+                                                    gm.getRecruitReference().getId(),
+                                                    InvitationState.PENDING
+                                            );
+                                            Toast.makeText(getContext(),
+                                                    getContext().getString(
+                                                            R.string.group_member_invited),
+                                                    Toast.LENGTH_SHORT).show();
+                                            break;
+                                    }
+                                } else {
                                     HashMap<String, GroupMember> membersToAdd;
-                                    membersToAdd = new HashMap<String, GroupMember>();
+                                    membersToAdd = new HashMap<>();
                                     membersToAdd.put(
                                             gm.getRecruitReference()
                                                     .getId(),
@@ -81,15 +110,8 @@ public class GroupDetailFragment extends Fragment {
                                             membersToAdd);
                                     Toast.makeText(getContext(),
                                             getContext().getString(
-                                                    R.string.group_member_added),
+                                                    R.string.group_member_invited),
                                             Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(getContext(),
-                                            getContext()
-                                                    .getString(
-                                                            R.string.group_add_member_already_member),
-                                            Toast.LENGTH_SHORT)
-                                            .show();
                                 }
                             } else {
                                 return;
@@ -116,7 +138,31 @@ public class GroupDetailFragment extends Fragment {
 
         listView.setAdapter(adapter);
 
-        String uid = Properties.getInstance().getCurrentRecruit().getUid();
+        initMembersListener(rootView);
+        initGroupListener();
+
+        return rootView;
+    }
+
+    private void initGroupListener() {
+        DocumentReference groupRef = GroupAccess.getGroupDocumentReference(listener.getGroupKey());
+
+        groupRef.addSnapshotListener(getActivity(), new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (documentSnapshot.exists()) {
+                    Group g = documentSnapshot.toObject(Group.class);
+                    g.setKey(documentSnapshot.getId());
+                    groupUid = g.getKey();
+                    name.setText(documentSnapshot.getId());
+                    city.setText(g.getCity());
+                    // TODO: init image
+                }
+            }
+        });
+    }
+
+    private void initMembersListener(final View rootView) {
         DocumentReference curUserRef = GroupAccess
                 .getGroupMemberDocumentReference(listener.getGroupKey(),
                         Properties.getInstance().getCurrentRecruit().getUid());
@@ -143,10 +189,17 @@ public class GroupDetailFragment extends Fragment {
                     GroupMember groupMember = dc.getDocument().toObject(GroupMember.class);
                     switch (dc.getType()) {
                         case ADDED:
-                            groupMembers.add(groupMember);
-                            adapter.notifyDataSetChanged();
+                            if (groupMember.getState() == InvitationState.ACCEPTED) {
+                                groupMembers.add(groupMember);
+                                adapter.notifyDataSetChanged();
+                            }
                             break;
                         case MODIFIED:
+                            groupMembers.remove(groupMember);
+                            if (groupMember.getState() == InvitationState.ACCEPTED) {
+                                groupMembers.add(groupMember);
+                                adapter.notifyDataSetChanged();
+                            }
                             break;
                         case REMOVED:
                             Recruit currentRecruit = Properties.getInstance()
@@ -154,37 +207,21 @@ public class GroupDetailFragment extends Fragment {
                             if (dc.getDocument()
                                     .getId()
                                     .equals(currentRecruit.getUid()) &&
-                                    !currentRecruit.getPermissions().isAdmin()) {
+                                    !currentRecruit.getPermissions()
+                                            .isAdmin()
+                                    ) {
                                 getActivity().finish();
-                            } else {
-                                groupMembers.remove(groupMember);
-                                adapter.notifyDataSetChanged();
+                                Toast.makeText(getContext(), R.string.recruit_deleted_from_group, Toast.LENGTH_SHORT).show();
+
                             }
+                            groupMembers.remove(groupMember);
+                            adapter.notifyDataSetChanged();
+
                             break;
                     }
                 }
             }
         });
-
-        String key = listener.getGroupKey();
-
-        DocumentReference groupRef = GroupAccess.getGroupDocumentReference(listener.getGroupKey());
-
-        groupRef.addSnapshotListener(getActivity(), new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (documentSnapshot.exists()) {
-                    Group g = documentSnapshot.toObject(Group.class);
-                    g.setKey(documentSnapshot.getId());
-                    groupUid = g.getKey();
-                    name.setText(documentSnapshot.getId());
-                    city.setText(g.getCity());
-                    // TODO: init image
-                }
-            }
-        });
-
-        return rootView;
     }
 
     @Override
@@ -220,5 +257,6 @@ public class GroupDetailFragment extends Fragment {
 
     public interface onGroupDetailFragmentInteractionListener {
         String getGroupKey();
+        GroupMember getCurrentGroupMember();
     }
 }
