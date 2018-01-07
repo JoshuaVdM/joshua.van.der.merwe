@@ -45,12 +45,11 @@ public class MainActivity extends AppCompatActivity
 
     private static final String MAINACTIVITY_RECRUIT_CHANGE = "RECRUIT_STATUS_CHANGED";
     private static final String CURRENT_FRAGMENT_TAG = "CURRENT_FRAGMENT_TAG";
-
     public FirebaseAuth auth;
     public FirebaseUser currentUser;
     public FirebaseFirestore firestore;
     public NavigationView navigationView;
-
+    private int currentFragmentId;
     private Context context;
     private TextView recruitName;
     private TextView recruitEmail;
@@ -109,10 +108,17 @@ public class MainActivity extends AppCompatActivity
         };
 
         // Initialize drawer navigation
+        currentFragmentId = R.id.nav_groups;
+        if (savedInstanceState != null) {
+            int savedFragmentId = savedInstanceState.getInt(CURRENT_FRAGMENT_TAG);
+            if (savedFragmentId != 0) {
+                currentFragmentId = savedFragmentId;
+            }
+        }
         navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        displaySelectedFragment(R.id.nav_groups);
+        displaySelectedFragment(currentFragmentId);
 
         // Set recruit info fields listeners
         recruitName = navigationView.getHeaderView(0)
@@ -193,6 +199,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putInt(CURRENT_FRAGMENT_TAG, currentFragmentId);
+    }
+
+    @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
     }
@@ -202,6 +215,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        currentFragmentId = id;
         displaySelectedFragment(id);
         return true;
     }
