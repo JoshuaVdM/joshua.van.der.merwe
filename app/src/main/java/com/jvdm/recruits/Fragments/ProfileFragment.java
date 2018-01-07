@@ -28,6 +28,7 @@ public class ProfileFragment extends Fragment {
     private MainActivity mainActivity;
     private TextView recruitName;
     private TextView recruitEmail;
+    private TextView recruitInfo;
     private ImageView profilePicture;
 
     public ProfileFragment() {
@@ -47,6 +48,7 @@ public class ProfileFragment extends Fragment {
         // Initialize views
         recruitName = rootView.findViewById(R.id.text_recruit_name);
         recruitEmail = rootView.findViewById(R.id.text_recruit_email);
+        recruitInfo = rootView.findViewById(R.id.text_recruit_info);
         profilePicture = rootView.findViewById(R.id.image_profile);
 
         return rootView;
@@ -72,6 +74,7 @@ public class ProfileFragment extends Fragment {
                     Recruit r = documentSnapshot.toObject(Recruit.class);
                     recruitName.setText(r.getUsername());
                     recruitEmail.setText(r.getEmail());
+                    recruitInfo.setText(r.getDescription());
                     if (r.getPhotoUri() != null) {
                         Picasso.with(mainActivity)
                                 .load(Uri.parse(r.getPhotoUri()))

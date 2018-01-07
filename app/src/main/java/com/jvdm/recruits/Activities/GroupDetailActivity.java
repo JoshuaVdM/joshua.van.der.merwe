@@ -1,6 +1,7 @@
 package com.jvdm.recruits.Activities;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,21 +12,30 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.jvdm.recruits.Adapters.GroupListAdapter;
 import com.jvdm.recruits.DataAccess.GroupAccess;
+import com.jvdm.recruits.Dialogs.LeaveGroupDialog;
 import com.jvdm.recruits.Fragments.GroupDetailFragment;
 import com.jvdm.recruits.Model.GroupMember;
 import com.jvdm.recruits.Properties;
 import com.jvdm.recruits.R;
+
+import java.util.List;
 
 public class GroupDetailActivity extends AppCompatActivity implements
         GroupDetailFragment.onGroupDetailFragmentInteractionListener {
 
     String groupKey;
     GroupMember currentGroupMember;
+    Menu menu;
+    List<ListenerRegistration> listenerRegistrations;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -60,7 +70,26 @@ public class GroupDetailActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_group_detail);
 
         groupKey = getIntent().getStringExtra(GroupListAdapter.GROUP_KEY_INTENT);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        // Create the adapter that will return a fragment for each of the three
+        // primary sections of the activity.
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+        // Set up the ViewPager with the sections adapter.
+        mViewPager = findViewById(R.id.container);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        TabLayout tabLayout = findViewById(R.id.tabs);
+
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout
+                .ViewPagerOnTabSelectedListener(mViewPager));
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         GroupAccess.getGroupDocumentReference(groupKey)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
@@ -87,45 +116,50 @@ public class GroupDetailActivity extends AppCompatActivity implements
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (documentSnapshot.exists()) {
                     GroupMember gm = documentSnapshot.toObject(GroupMember.class);
+                    gm.setKey(documentSnapshot.getId());
+                    boolean admin;
+                    admin = Properties.getInstance().getCurrentRecruit().getPermissions().isAdmin();
                     switch (gm.getState()) {
                         case ACCEPTED:
                             currentGroupMember = gm;
                             break;
                         case PENDING:
-                            onNavigateUp();
+                            if (!admin) {
+                                onNavigateUp();
+                            }
                             break;
                         case DECLINED:
-                            onNavigateUp();
+                            if (!admin) {
+                                onNavigateUp();
+                            }
                             break;
                     }
-                } else {
+                } else if (!Properties.getInstance()
+                        .getCurrentRecruit()
+                        .getPermissions()
+                        .isAdmin()) {
                     onNavigateUp();
                 }
+                invalidateOptionsMenu();
             }
         });
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-
-        TabLayout tabLayout = findViewById(R.id.tabs);
-
-        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout
-                .ViewPagerOnTabSelectedListener(mViewPager));
     }
 
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (currentGroupMember != null) {
+            menu.findItem(R.id.action_leave_group).setVisible(true);
+        } else {
+            menu.findItem(R.id.action_leave_group).setVisible(false);
+        }
+        return true;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_group_detail, menu);
+        this.menu = menu;
         return true;
     }
 
@@ -135,10 +169,48 @@ public class GroupDetailActivity extends AppCompatActivity implements
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_settings:
+                break;
+            case R.id.action_leave_group:
+                new LeaveGroupDialog(
+                        this,
+                        groupKey,
+                        new LeaveGroupDialog.onLeaveGroupDialogInteractionListener() {
+                            @Override
+                            public void onGroupLeave() {
+                                DocumentReference groupMemberRef;
+                                groupMemberRef = GroupAccess.getGroupMemberDocumentReference(
+                                        groupKey,
+                                        Properties.getInstance()
+                                                .getCurrentRecruit()
+                                                .getUid()
+                                );
+                                groupMemberRef.delete()
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Toast.makeText(
+                                                        GroupDetailActivity.this,
+                                                        R.string.group_member_leave_group_succesful,
+                                                        Toast.LENGTH_SHORT).show();
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Toast.makeText(
+                                                        GroupDetailActivity.this,
+                                                        getResources()
+                                                                .getString(
+                                                                        R.string.group_member_leave_group_failure,
+                                                                        groupKey),
+                                                        Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                            }
+                        });
+                break;
         }
 
         return super.onOptionsItemSelected(item);

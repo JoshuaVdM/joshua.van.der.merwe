@@ -1,9 +1,13 @@
 <resources>
+    <string name="placeholder">Placeholder</string>
+
     <string name="app_name">Recruits</string>
     <string name="action_add">Add</string>
     <string name="action_accept">Accept</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_decline">Decline</string>
+    <string name="action_yes">Yes</string>
+    <string name="action_no">No</string>
 
     <!-- Strings related to login/out -->
     <string name="prompt_email">Email</string>
@@ -34,7 +38,7 @@
 
     <!-- Admin strings -->
     <string name="profile_verifications">Recruit account verifications</string>
-    <string name="profile_verifications_title">Verifications</string>
+    <string name="profile_verifications_title">Account verifications</string>
     <string name="admin_title">Admin</string>
 
     <!-- Strings related to recruits -->
@@ -65,8 +69,12 @@
     <string name="group_member_invitation_pending">Pending</string>
     <string name="group_member_invitation_accepted">Invitation accepted</string>
     <string name="group_member_invitation_declined">Invitation declined</string>
-    <string name="group_member_invitation_title">Group invitation</string>
+    <string name="group_member_invitation_title">Group invitations</string>
     <string name="group_member_invitation_message">You have been invited to join</string>
+    <string name="group_member_leave_group_title">Leave group</string>
+    <string name="group_member_leave_group_message">Are you sure you want to leave %1$s?</string>
+    <string name="group_member_leave_group_succesful">Successfully left group</string>
+    <string name="group_member_leave_group_failure">There was a problem leaving %1$s</string>
 
     <!-- Facebook application ID and custom URL scheme (app ID prefixed by 'fb'). -->
     <string name="facebook_application_id" translatable="false">1627493943938849</string>

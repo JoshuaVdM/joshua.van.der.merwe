@@ -2,6 +2,7 @@ package com.jvdm.recruits;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -189,6 +190,11 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
         return true;
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

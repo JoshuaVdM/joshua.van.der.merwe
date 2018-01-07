@@ -1,0 +1,98 @@
+<resources>
+    <string name="app_name">Recruits</string>
+    <string name="action_add">Toevoegen</string>
+    <string name="action_accept">Accepteren</string>
+    <string name="action_cancel">Annuleer</string>
+    <string name="action_decline">Weigeren</string>
+    <string name="action_yes">Ja</string>
+    <string name="action_no">Nee</string>
+
+    <!-- Strings related to login/out -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Paswoord (optioneel)</string>
+    <string name="action_sign_in">Log in of registreer</string>
+    <string name="action_sign_in_short">Log in</string>
+    <string name="error_invalid_email">E-mail adres is ongeldig</string>
+    <string name="error_invalid_password">Paswoord is te kort</string>
+    <string name="error_incorrect_password">Paswoord is incorrect</string>
+    <string name="error_field_required">Dit veld is vereist</string>
+    <string name="permission_rationale">"Contact permissies zijn vereist om e-mail aanvulling te
+        suggereren.
+    </string>
+    <string name="action_sign_out">Uitloggen</string>
+    <string name="msg_not_verified">Uw account is nog niet geverifiëerd</string>
+    <string name="title_not_verified">Niet geverifiëerd</string>
+    <string name="action_exit_app">Sluit de app</string>
+    <string name="action_choose_account">Wissel account</string>
+
+    <!-- Strings related to profile -->
+    <string name="profile_manage">Beheer</string>
+    <string name="profile_title">Profiel</string>
+    <string name="profile_image">Profielfoto</string>
+    <string name="profile_edit">Wijzig profiel</string>
+    <string name="profile_description">Over mezelf</string>
+    <string name="profile_description_edit">Vertel ons over jezelf</string>
+    <string name="profile_action_save">Opslaan</string>
+
+    <!-- Admin strings -->
+    <string name="profile_verifications">Recruit account verificaties</string>
+    <string name="profile_verifications_title">Account verificaties</string>
+    <string name="admin_title">Admin</string>
+
+    <!-- Strings related to recruits -->
+    <string name="recruit_name">Recruit naam</string>
+    <string name="recruit_selection_invalid">Gelieve een recruit te selecteren</string>
+    <string name="recruit_invitations">Uitnodigingen</string>
+    <string name="recruit_deleted_from_group">Je werd verwijderd van deze groep</string>
+
+    <!-- Strings related to groups -->
+    <string name="groups_user_groups">Mijn groepen</string>
+    <string name="groups_all_groups">Alle groepen</string>
+    <string name="groups_add">Nieuwe groep</string>
+    <string name="group_name">Groepnaam</string>
+    <string name="group_location">Groep locatie</string>
+    <string name="group_add">Toevoegen</string>
+    <string name="group_detail_tab">Groep details</string>
+    <string name="group_chat_tab">Chat</string>
+    <string name="group_members">Leden</string>
+    <string name="group_add_title">Voeg groep toe</string>
+    <string name="group_city">Stad</string>
+    <string name="group_add_member_title">Voeg groeplid toe</string>
+    <string name="group_add_member_already_member">Deze recruit is al in de group</string>
+    <string name="group_member_added">Recruit toegevoegd aan de groep</string>
+    <string name="group_member_invited">Recruit uitgenodigd tot de groep</string>
+    <string name="group_member_already_invited">Recruit is al uitgenodigd</string>
+    <string name="group_member_role_leader">Leider</string>
+    <string name="group_member_role_member">Lid</string>
+    <string name="group_member_invitation_pending">In afwachting</string>
+    <string name="group_member_invitation_accepted">Uitnodiging geaccepteerd</string>
+    <string name="group_member_invitation_declined">Uitnodiging afgewezen</string>
+    <string name="group_member_invitation_title">Groep uitnodigingen</string>
+    <string name="group_member_invitation_message">Je bent uitgenodigd tot de groep</string>
+    <string name="group_member_leave_group_title">Verlaat groep</string>
+    <string name="group_member_leave_group_message">Ben je zeker dat je %1$s wilt verlaten?</string>
+    <string name="group_member_leave_group_succesful">Groep succesvol verlaten</string>
+    <string name="group_member_leave_group_failure">Er was een probleem bij het verlaten van %1$s</string>
+
+    <string name="title_item_list">Items</string>
+    <string name="title_item_detail">Item Detail</string>
+    <string name="title_activity_main">Recruits</string>
+
+    <string name="navigation_drawer_open">Open navigatie lade</string>
+    <string name="navigation_drawer_close">Sluit navigatie lade</string>
+
+    <string name="action_settings">Instellingen</string>
+    <string name="title_activity_settings">Instellingen</string>
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">Algemeen</string>
+    <string name="pref_restart_required">Opnieuw opstarten van de app is vereist om deze functie
+        aan te zetten
+    </string>
+
+    <!-- Data persistence settings -->
+    <string name="pref_data_persistence_key">key_data_persistence</string>
+    <string name="pref_data_persistence_summary">Hou een lokale kopie van de data</string>
+    <string name="pref_data_persistence_title">Data persistentie</string>
+
+</resources>

@@ -71,6 +71,7 @@ public class GroupDetailFragment extends Fragment {
                                         task.getResult();
                                 if (snapshot.exists()) {
                                     GroupMember tmpMember = snapshot.toObject(GroupMember.class);
+                                    tmpMember.setKey(snapshot.getId());
                                     switch (tmpMember.getState()) {
                                         case ACCEPTED:
                                             Toast.makeText(
@@ -171,6 +172,7 @@ public class GroupDetailFragment extends Fragment {
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if (documentSnapshot.exists()) {
                     currentMember = documentSnapshot.toObject(GroupMember.class);
+                    currentMember.setKey(documentSnapshot.getId());
                 }
                 initFab(rootView);
             }
@@ -187,6 +189,7 @@ public class GroupDetailFragment extends Fragment {
 
                 for (DocumentChange dc : documentSnapshots.getDocumentChanges()) {
                     GroupMember groupMember = dc.getDocument().toObject(GroupMember.class);
+                    groupMember.setKey(dc.getDocument().getId());
                     switch (dc.getType()) {
                         case ADDED:
                             if (groupMember.getState() == InvitationState.ACCEPTED) {

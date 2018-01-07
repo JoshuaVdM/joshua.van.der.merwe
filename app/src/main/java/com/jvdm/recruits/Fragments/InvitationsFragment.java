@@ -224,6 +224,6 @@ public class InvitationsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getActivity().setTitle("Group invitations");
+        getActivity().setTitle(R.string.group_member_invitation_title);
     }
 }

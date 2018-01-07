@@ -115,6 +115,6 @@ public class RecruitVerificationFragment extends ListFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mainActivity.setTitle("Account verifications");
+        mainActivity.setTitle(R.string.profile_verifications_title);
     }
 }

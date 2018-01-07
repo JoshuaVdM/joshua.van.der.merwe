@@ -30,13 +30,10 @@ import com.jvdm.recruits.DataAccess.DataAccess;
 import com.jvdm.recruits.DataAccess.GroupAccess;
 import com.jvdm.recruits.DataAccess.RecruitAccess;
 import com.jvdm.recruits.Dialogs.AddGroupDialog;
-import com.jvdm.recruits.MainActivity;
 import com.jvdm.recruits.Model.Group;
 import com.jvdm.recruits.Model.InvitationState;
 import com.jvdm.recruits.Model.RecruitGroup;
 import com.jvdm.recruits.R;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -224,6 +221,6 @@ public class GroupsFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getActivity().setTitle(admin ? "All groups" : "My groups");
+        getActivity().setTitle(admin ? R.string.groups_all_groups : R.string.groups_user_groups);
     }
 }

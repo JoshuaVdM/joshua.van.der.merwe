@@ -1,6 +1,5 @@
 package com.jvdm.recruits.DataAccess;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -152,4 +151,5 @@ public class GroupAccess extends DataAccess {
             }
         });
     }
+
 }

@@ -137,6 +137,7 @@ public class AddGroupMemberDialog extends AlertDialog.Builder {
                             Toast.LENGTH_SHORT).show();
                 } else {
                     GroupMember gm = new GroupMember();
+                    gm.setKey(selectedRecruit.getUid());
                     gm.setRecruitReference(
                             RecruitAccess.getRecruitDocumentReference(selectedRecruit.getUid()));
                     gm.setRole(role);
