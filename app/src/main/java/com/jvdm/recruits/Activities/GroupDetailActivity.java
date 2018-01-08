@@ -18,25 +18,25 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.ListenerRegistration;
 import com.jvdm.recruits.Adapters.GroupListAdapter;
 import com.jvdm.recruits.DataAccess.GroupAccess;
+import com.jvdm.recruits.Dialogs.InactivateGroupDialog;
 import com.jvdm.recruits.Dialogs.LeaveGroupDialog;
 import com.jvdm.recruits.Fragments.GroupDetailFragment;
+import com.jvdm.recruits.Model.Group;
 import com.jvdm.recruits.Model.GroupMember;
+import com.jvdm.recruits.Model.Permission;
 import com.jvdm.recruits.Properties;
 import com.jvdm.recruits.R;
-
-import java.util.List;
 
 public class GroupDetailActivity extends AppCompatActivity implements
         GroupDetailFragment.onGroupDetailFragmentInteractionListener {
 
+    public static final String GROUPDETAILACTIVITY_TAG = "GROUPDETAILACTIVITY_TAG";
     String groupKey;
+    Group currentGroup;
     GroupMember currentGroupMember;
     Menu menu;
-    List<ListenerRegistration> listenerRegistrations;
-
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -85,73 +85,46 @@ public class GroupDetailActivity extends AppCompatActivity implements
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout
                 .ViewPagerOnTabSelectedListener(mViewPager));
+
+        initGroupListeners();
+        initRecruitPermissionsListener();
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        GroupAccess.getGroupDocumentReference(groupKey)
-                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
-                    @Override
-                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                        if (documentSnapshot.exists()) {
-                            setTitle(documentSnapshot.getId());
-                        } else {
-                            Toast.makeText(
-                                    GroupDetailActivity.this,
-                                    "Group was removed",
-                                    Toast.LENGTH_SHORT).show();
-                            finish();
-                        }
-                    }
-                });
-
-        GroupAccess.getGroupMemberDocumentReference(
-                groupKey,
-                Properties.getInstance()
-                        .getCurrentRecruit()
-                        .getUid()
-        ).addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
-                if (documentSnapshot.exists()) {
-                    GroupMember gm = documentSnapshot.toObject(GroupMember.class);
-                    gm.setKey(documentSnapshot.getId());
-                    boolean admin;
-                    admin = Properties.getInstance().getCurrentRecruit().getPermissions().isAdmin();
-                    switch (gm.getState()) {
-                        case ACCEPTED:
-                            currentGroupMember = gm;
-                            break;
-                        case PENDING:
-                            if (!admin) {
-                                onNavigateUp();
-                            }
-                            break;
-                        case DECLINED:
-                            if (!admin) {
-                                onNavigateUp();
-                            }
-                            break;
-                    }
-                } else if (!Properties.getInstance()
-                        .getCurrentRecruit()
-                        .getPermissions()
-                        .isAdmin()) {
-                    onNavigateUp();
-                }
-                invalidateOptionsMenu();
-            }
-        });
+    protected void onStop() {
+        super.onStop();
+        Properties.getInstance().removeRecruitListener(GROUPDETAILACTIVITY_TAG);
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem leaveGroup = menu.findItem(R.id.action_leave_group);
+        MenuItem inactivateGroup = menu.findItem(R.id.action_inactivate_group);
+        MenuItem reactivateGroup = menu.findItem(R.id.action_reactivate_group);
+        MenuItem deleteGroup = menu.findItem(R.id.action_delete_group);
+
         if (currentGroupMember != null) {
-            menu.findItem(R.id.action_leave_group).setVisible(true);
+            leaveGroup.setVisible(true);
         } else {
-            menu.findItem(R.id.action_leave_group).setVisible(false);
+            leaveGroup.setVisible(false);
         }
+
+        boolean isAdmin = Properties.getInstance()
+                .getCurrentRecruit()
+                .getPermissions()
+                .isAdmin();
+
+        if (currentGroup != null) {
+            if (currentGroup.isActive()) {
+                inactivateGroup.setVisible(isAdmin);
+                reactivateGroup.setVisible(false);
+            } else {
+                reactivateGroup.setVisible(isAdmin);
+                inactivateGroup.setVisible(false);
+            }
+        }
+
+        deleteGroup.setVisible(isAdmin);
         return true;
     }
 
@@ -176,7 +149,7 @@ public class GroupDetailActivity extends AppCompatActivity implements
                 new LeaveGroupDialog(
                         this,
                         groupKey,
-                        new LeaveGroupDialog.onLeaveGroupDialogInteractionListener() {
+                        new LeaveGroupDialog.onLeaveGroupDialogListener() {
                             @Override
                             public void onGroupLeave() {
                                 DocumentReference groupMemberRef;
@@ -211,6 +184,90 @@ public class GroupDetailActivity extends AppCompatActivity implements
                             }
                         });
                 break;
+            case R.id.action_inactivate_group:
+                if (!Properties.getInstance().getCurrentRecruit().getPermissions().isAdmin()) {
+                    break;
+                }
+                new InactivateGroupDialog(this,
+                        groupKey,
+                        getString(R.string.group_inactivate_title),
+                        getString(R.string.group_inactivate_message, groupKey),
+                        new InactivateGroupDialog.onInactivateGroupDialogListener() {
+                            @Override
+                            public void onGroupInactivated() {
+                                DocumentReference groupRef;
+                                groupRef = GroupAccess.getGroupDocumentReference(groupKey);
+                                groupRef.update("active", false)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Toast.makeText(GroupDetailActivity.this,
+                                                        R.string.group_inactivate_success,
+                                                        Toast.LENGTH_SHORT).show();
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Toast.makeText(GroupDetailActivity.this,
+                                                        R.string.group_inactivate_failure,
+                                                        Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                            }
+                        });
+                break;
+            case R.id.action_reactivate_group:
+                if (!Properties.getInstance().getCurrentRecruit().getPermissions().isAdmin()) {
+                    break;
+                }
+                new InactivateGroupDialog(this,
+                        groupKey,
+                        getString(R.string.group_reactivate_title),
+                        getString(R.string.group_reactivate_message, groupKey),
+                        new InactivateGroupDialog.onInactivateGroupDialogListener() {
+                            @Override
+                            public void onGroupInactivated() {
+                                DocumentReference groupRef;
+                                groupRef = GroupAccess.getGroupDocumentReference(groupKey);
+                                groupRef.update("active", true)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Toast.makeText(GroupDetailActivity.this,
+                                                        R.string.group_reactivate_success,
+                                                        Toast.LENGTH_SHORT).show();
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Toast.makeText(GroupDetailActivity.this,
+                                                        R.string.group_reactivate_failure,
+                                                        Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                            }
+                        });
+                break;
+            case R.id.action_delete_group:
+                if (!Properties.getInstance().getCurrentRecruit().getPermissions().isAdmin()) {
+                    break;
+                }
+                new InactivateGroupDialog(this,
+                        groupKey,
+                        getString(R.string.group_delete_title),
+                        getString(R.string.group_delete_message, groupKey),
+                        new InactivateGroupDialog.onInactivateGroupDialogListener() {
+                            @Override
+                            public void onGroupInactivated() {
+                                DocumentReference groupRef;
+                                groupRef = GroupAccess.getGroupDocumentReference(groupKey);
+                                groupRef.delete();
+                            }
+                        });
+
+                break;
         }
 
         return super.onOptionsItemSelected(item);
@@ -224,6 +281,97 @@ public class GroupDetailActivity extends AppCompatActivity implements
     @Override
     public GroupMember getCurrentGroupMember() {
         return currentGroupMember;
+    }
+
+    private void initRecruitPermissionsListener() {
+        Properties.getInstance().addRecruitListener(GROUPDETAILACTIVITY_TAG,
+                new Properties.onPropertiesInteractionListener() {
+                    @Override
+                    public void onRecruitRemoved() {
+
+                    }
+
+                    @Override
+                    public void onRecruitUnverified() {
+
+                    }
+
+                    @Override
+                    public void onRecruitPermissionsChanged(Permission newPermissions) {
+                        invalidateOptionsMenu();
+                        if (!newPermissions.isAdmin()) {
+                            finish();
+                        }
+                    }
+                });
+    }
+
+    private void initGroupListeners() {
+        GroupAccess.getGroupDocumentReference(groupKey)
+                .addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                        if (documentSnapshot.exists()) {
+                            Group g = documentSnapshot.toObject(Group.class);
+                            if (!g.isActive()
+                                    && !Properties.getInstance().
+                                    getCurrentRecruit().
+                                    getPermissions()
+                                    .isAdmin()) {
+                                finish();
+                            }
+                            currentGroup = g;
+                            invalidateOptionsMenu();
+                            setTitle(documentSnapshot.getId());
+                        } else {
+                            Toast.makeText(
+                                    GroupDetailActivity.this,
+                                    "Group was removed",
+                                    Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    }
+                });
+
+        DocumentReference groupMemberRef = GroupAccess.getGroupMemberDocumentReference(
+                groupKey,
+                Properties.getInstance()
+                        .getCurrentRecruit()
+                        .getUid()
+        );
+
+        groupMemberRef.addSnapshotListener(this, new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if (documentSnapshot.exists()) {
+                    GroupMember gm = documentSnapshot.toObject(GroupMember.class);
+                    gm.setKey(documentSnapshot.getId());
+                    boolean admin;
+                    admin = Properties.getInstance().getCurrentRecruit().getPermissions().isAdmin();
+                    switch (gm.getState()) {
+                        case ACCEPTED:
+                            currentGroupMember = gm;
+                            break;
+                        case PENDING:
+                            if (!admin) {
+                                onNavigateUp();
+                            }
+                            break;
+                        case DECLINED:
+                            if (!admin) {
+                                onNavigateUp();
+                            }
+                            break;
+                    }
+                } else if (!Properties.getInstance()
+                        .getCurrentRecruit()
+                        .getPermissions()
+                        .isAdmin()) {
+                    onNavigateUp();
+                }
+                invalidateOptionsMenu();
+            }
+        });
     }
 
     /**

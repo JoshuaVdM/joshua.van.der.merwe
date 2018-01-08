@@ -11,10 +11,10 @@ import com.jvdm.recruits.R;
  */
 
 public class AcceptInvitationDialog extends AlertDialog.Builder {
-    private onAcceptInvitationDialogInteractionListener listener;
+    private onAcceptInvitationDialogListener listener;
     private String name;
 
-    public AcceptInvitationDialog(Context context, String name, onAcceptInvitationDialogInteractionListener listener) {
+    public AcceptInvitationDialog(Context context, String name, onAcceptInvitationDialogListener listener) {
         super(context);
         this.listener = listener;
         this.name = name;
@@ -44,7 +44,7 @@ public class AcceptInvitationDialog extends AlertDialog.Builder {
 
     }
 
-    public interface onAcceptInvitationDialogInteractionListener {
+    public interface onAcceptInvitationDialogListener {
         void onInvitationAccepted();
         void onInvitationDeclined();
     }}

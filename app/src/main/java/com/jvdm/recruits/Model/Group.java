@@ -8,6 +8,7 @@ public class Group {
     @Exclude
     private String key;
     private String city;
+    private boolean active;
 
     // Constructors
 
@@ -31,6 +32,14 @@ public class Group {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     @Override

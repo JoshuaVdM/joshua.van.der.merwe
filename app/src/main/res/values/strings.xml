@@ -1,5 +1,5 @@
 <resources>
-    <string name="placeholder">Placeholder</string>
+    <string name="placeholder" translatable="false">Placeholder</string>
 
     <string name="app_name">Recruits</string>
     <string name="action_add">Add</string>
@@ -81,7 +81,7 @@
     <string name="facebook_login_protocol_scheme" translatable="false">fb1627493943938849</string>
     <string name="title_item_list">Items</string>
     <string name="title_item_detail">Item Detail</string>
-    <string name="title_activity_main">Recruits</string>
+    <string name="title_activity_main" translatable="false">Recruits</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -97,5 +97,19 @@
     <string name="pref_data_persistence_key">key_data_persistence</string>
     <string name="pref_data_persistence_summary">Keep a copy of data offline</string>
     <string name="pref_data_persistence_title">Data persistence</string>
+
+    <string name="group_delete_title">Delete group</string>
+    <string name="group_delete_message">Are you sure you want to delete %1$s? You will NOT be able to recover it.</string>
+    <string name="group_delete_success">Group deleted</string>
+    <string name="group_delete_failure">Error while deleting group. Try again or contact a developer</string>
+    <string name="group_inactive_title">INACTIVE</string>
+    <string name="group_inactivate_title">Inactivate</string>
+    <string name="group_inactivate_success">Inactivated group</string>
+    <string name="group_inactivate_failure">Error inactivating group</string>
+    <string name="group_inactivate_message">Are you sure you want to inactivate %1$s?</string>
+    <string name="group_reactivate_title">Reactivate</string>
+    <string name="group_reactivate_success">Reactivated group</string>
+    <string name="group_reactivate_failure">Error reactivating group</string>
+    <string name="group_reactivate_message">Are you sure you want to reactivate %1$s?</string>
 
 </resources>

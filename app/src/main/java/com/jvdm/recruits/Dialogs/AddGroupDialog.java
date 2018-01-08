@@ -42,6 +42,7 @@ public class AddGroupDialog extends AlertDialog.Builder {
                 Group g = new Group();
                 g.setKey(name);
                 g.setCity(city);
+                g.setActive(true);
                 listener.onGroupChosen(g);
                 dialog.cancel();
             }

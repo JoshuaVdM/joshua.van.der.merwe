@@ -155,7 +155,7 @@ public class GroupsFragment extends Fragment {
                     getRecruitGroupsCollectionReference(
                             FirebaseAuth.getInstance().getCurrentUser().getUid()
                     );
-            groupsRef.addSnapshotListener(getActivity(), new EventListener<QuerySnapshot>() {
+            groupsRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
                 public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
                     if (e != null) {
@@ -168,14 +168,16 @@ public class GroupsFragment extends Fragment {
 
                         switch (dc.getType()) {
                             case ADDED:
-                                if (g.getMember().getState() == InvitationState.ACCEPTED) {
+                                if (g.getMember().getState() == InvitationState.ACCEPTED
+                                        && g.getGroup().isActive()) {
                                     values.add(g.getGroup());
                                     adapter.notifyDataSetChanged();
                                 }
                                 break;
                             case MODIFIED:
                                 values.remove(g.getGroup());
-                                if (g.getMember().getState() == InvitationState.ACCEPTED) {
+                                if (g.getMember().getState() == InvitationState.ACCEPTED
+                                        && g.getGroup().isActive()) {
                                     values.add(g.getGroup());
                                 }
                                 adapter.notifyDataSetChanged();
@@ -190,7 +192,7 @@ public class GroupsFragment extends Fragment {
             });
         } else {
             groupsRef = GroupAccess.getGroupsCollectionReference();
-            groupsRef.addSnapshotListener(getActivity(), new EventListener<QuerySnapshot>() {
+            groupsRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
                 public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
                     if (e != null) {

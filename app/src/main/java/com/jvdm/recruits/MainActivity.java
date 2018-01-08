@@ -37,6 +37,7 @@ import com.jvdm.recruits.Fragments.InvitationsFragment;
 import com.jvdm.recruits.Fragments.ProfileFragment;
 import com.jvdm.recruits.Fragments.RecruitVerificationFragment;
 import com.jvdm.recruits.Helpers.CircleTransform;
+import com.jvdm.recruits.Model.Permission;
 import com.jvdm.recruits.Model.Recruit;
 import com.squareup.picasso.Picasso;
 
@@ -101,7 +102,7 @@ public class MainActivity extends AppCompatActivity
             }
 
             @Override
-            public void onRecruitPermissionsChanged() {
+            public void onRecruitPermissionsChanged(Permission newPermission) {
                 initNavMenu();
                 displayDefaultFragmentIfCurrentFragmentIsAdminOnly();
             }

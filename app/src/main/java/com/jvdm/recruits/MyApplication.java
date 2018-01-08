@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import com.jvdm.recruits.Model.Permission;
 
 /**
  * Created by Joske on 30/12/17.
@@ -47,7 +48,7 @@ public class MyApplication extends Application {
             }
 
             @Override
-            public void onRecruitPermissionsChanged() {
+            public void onRecruitPermissionsChanged(Permission newPermission) {
 
             }
         };

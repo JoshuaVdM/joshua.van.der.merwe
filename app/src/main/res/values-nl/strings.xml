@@ -76,7 +76,6 @@
 
     <string name="title_item_list">Items</string>
     <string name="title_item_detail">Item Detail</string>
-    <string name="title_activity_main">Recruits</string>
 
     <string name="navigation_drawer_open">Open navigatie lade</string>
     <string name="navigation_drawer_close">Sluit navigatie lade</string>
@@ -94,5 +93,18 @@
     <string name="pref_data_persistence_key">key_data_persistence</string>
     <string name="pref_data_persistence_summary">Hou een lokale kopie van de data</string>
     <string name="pref_data_persistence_title">Data persistentie</string>
+    <string name="group_delete_title">Verwijder groep</string>
+    <string name="group_delete_message">Ben je zeker dat je %1$s wilt verwijderen? Je kan de groep daarna NIET meer herstellen.</string>
+    <string name="group_delete_success">Groep verwijderd</string>
+    <string name="group_delete_failure">Kon de groep niet verwijderen. Probeer het nog is of contacteer een ontwikkelaar</string>
+    <string name="group_inactive_title">INACTIEF</string>
+    <string name="group_inactivate_title">Inactiveren</string>
+    <string name="group_inactivate_success">Groep geïnactiveerd</string>
+    <string name="group_inactivate_failure">Inactiveren mislukt</string>
+    <string name="group_inactivate_message">Ben je zeker dat je %1$s wilt verwijderen?</string>
+    <string name="group_reactivate_title">Reactiveren</string>
+    <string name="group_reactivate_success">Groep gereactiveerd</string>
+    <string name="group_reactivate_failure">Reactiveren mislukt</string>
+    <string name="group_reactivate_message">Ben je zeker dat je %1$s wilt reactiveren?</string>
 
 </resources>

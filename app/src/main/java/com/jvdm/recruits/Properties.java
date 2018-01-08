@@ -92,7 +92,7 @@ public class Properties {
 
     private void callOnRecruitPermissionChanged() {
         for (Map.Entry<String, onPropertiesInteractionListener> listener : listeners.entrySet()) {
-            listener.getValue().onRecruitPermissionsChanged();
+            listener.getValue().onRecruitPermissionsChanged(currentRecruit.getPermissions());
         }
     }
 
@@ -109,7 +109,7 @@ public class Properties {
 
         void onRecruitUnverified();
 
-        void onRecruitPermissionsChanged();
+        void onRecruitPermissionsChanged(Permission newPermissions);
     }
 }
 

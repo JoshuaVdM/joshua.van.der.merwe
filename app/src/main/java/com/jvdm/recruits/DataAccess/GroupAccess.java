@@ -64,9 +64,6 @@ public class GroupAccess extends DataAccess {
         getGroupMemberDocumentReference(groupName, uid).update(
                 "state", state.getEnumValue()
         );
-        RecruitAccess.getRecruitGroupDocumentReference(uid, groupName).update(
-                "member.state", state.getEnumValue()
-        );
     }
 
     public static void updateOrAddGroupMembers(

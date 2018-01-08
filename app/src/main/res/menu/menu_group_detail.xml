@@ -15,4 +15,26 @@
         android:title="@string/group_member_leave_group_title"
         android:visible="false"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_inactivate_group"
+        android:orderInCategory="300"
+        android:title="@string/group_inactivate_title"
+        android:visible="false"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_reactivate_group"
+        android:orderInCategory="300"
+        android:title="@string/group_reactivate_title"
+        android:visible="false"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_delete_group"
+        android:orderInCategory="400"
+        android:title="@string/group_delete_title"
+        android:visible="false"
+        app:showAsAction="never" />
+
 </menu>

@@ -58,7 +58,7 @@ public class InvitationsFragment extends Fragment {
             new AcceptInvitationDialog(
                     getContext(),
                     name,
-                    new AcceptInvitationDialog.onAcceptInvitationDialogInteractionListener() {
+                    new AcceptInvitationDialog.onAcceptInvitationDialogListener() {
                         @Override
                         public void onInvitationAccepted() {
                             GroupAccess.updateGroupMemberInvitationState(

@@ -46,6 +46,7 @@ public class GroupDetailFragment extends Fragment {
 
     private TextView name;
     private TextView city;
+    private TextView inactive;
     private ImageView image;
     private ListView listView;
     private GroupMember currentMember;
@@ -130,6 +131,7 @@ public class GroupDetailFragment extends Fragment {
                 .inflate(R.layout.fragment_group_detail, container, false);
         name = rootView.findViewById(R.id.txt_group_name);
         city = rootView.findViewById(R.id.txt_group_city);
+        inactive = rootView.findViewById(R.id.txt_group_inactive);
         image = rootView.findViewById(R.id.img_group);
         listView = rootView.findViewById(R.id.list_group_members);
 
@@ -157,6 +159,12 @@ public class GroupDetailFragment extends Fragment {
                     groupUid = g.getKey();
                     name.setText(documentSnapshot.getId());
                     city.setText(g.getCity());
+                    if (!g.isActive()) {
+                        inactive.setVisibility(View.VISIBLE);
+                    } else {
+                        inactive.setVisibility(View.INVISIBLE);
+                    }
+
                     // TODO: init image
                 }
             }
@@ -260,6 +268,7 @@ public class GroupDetailFragment extends Fragment {
 
     public interface onGroupDetailFragmentInteractionListener {
         String getGroupKey();
+
         GroupMember getCurrentGroupMember();
     }
 }

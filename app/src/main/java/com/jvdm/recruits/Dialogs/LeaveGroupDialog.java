@@ -12,9 +12,9 @@ import com.jvdm.recruits.R;
 
 public class LeaveGroupDialog extends AlertDialog.Builder {
     private String name;
-    private onLeaveGroupDialogInteractionListener listener;
+    private onLeaveGroupDialogListener listener;
 
-    public LeaveGroupDialog(Context context, String name, onLeaveGroupDialogInteractionListener listener) {
+    public LeaveGroupDialog(Context context, String name, onLeaveGroupDialogListener listener) {
         super(context);
         this.listener = listener;
         this.name = name;
@@ -39,11 +39,11 @@ public class LeaveGroupDialog extends AlertDialog.Builder {
                 dialog.cancel();
             }
         });
-        final AlertDialog dialog = create();
+        AlertDialog dialog = create();
         dialog.show();
     }
 
-    public interface onLeaveGroupDialogInteractionListener {
+    public interface onLeaveGroupDialogListener {
         void onGroupLeave();
     }
 }
