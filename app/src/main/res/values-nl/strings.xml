@@ -98,7 +98,7 @@
     <string name="group_delete_success">Groep verwijderd</string>
     <string name="group_delete_failure">Kon de groep niet verwijderen. Probeer het nog is of contacteer een ontwikkelaar</string>
     <string name="group_inactive_title">INACTIEF</string>
-    <string name="group_inactivate_title">Inactiveren</string>
+    <string name="group_inactivate_title">Deactiveer groep</string>
     <string name="group_inactivate_success">Groep geïnactiveerd</string>
     <string name="group_inactivate_failure">Inactiveren mislukt</string>
     <string name="group_inactivate_message">Ben je zeker dat je %1$s wilt verwijderen?</string>
